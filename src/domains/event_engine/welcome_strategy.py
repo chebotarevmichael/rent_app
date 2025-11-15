@@ -3,7 +3,7 @@ from src.domains.event_engine import BaseStrategy
 from src.enums import EventInType, EventOutType, EventOutState
 
 
-EXPLANATION_TEMPLATE_OK = 'Welcome message approved (in event id: {in_event_id})'
+EXPLANATION_TEMPLATE_OK = 'Welcome message was approved (in event ids: {in_event_ids})'
 EXPLANATION_TEMPLATE_SUPPRESSED = 'Welcome message already exists (exist out event_id: {out_event_id})'
 
 
@@ -36,7 +36,7 @@ class WelcomeStrategy(BaseStrategy):
     @staticmethod
     def judge_out_event(out_events: set[EventOut], **kwargs) -> None:
         # ignore other
-        welcome_out_events = {out_event for out_event in out_events if out_event.event_type == EventOutType.WELCOME_EMAIL}
+        welcome_out_events = {e for e in out_events if e.event_type == EventOutType.WELCOME_EMAIL}
         if not welcome_out_events:
             return
 
@@ -47,7 +47,7 @@ class WelcomeStrategy(BaseStrategy):
         if in_pipeline_event is None:
             in_pipeline_event = welcome_out_events.pop()  # event in CREATED state
             in_pipeline_event.state = EventOutState.READY
-            in_pipeline_event.explanation = EXPLANATION_TEMPLATE_OK.format(in_event_id=in_pipeline_event.linked_in_events)
+            in_pipeline_event.explanation = EXPLANATION_TEMPLATE_OK.format(in_event_ids=in_pipeline_event.linked_in_events)
 
         # suppress other
         welcome_out_events.discard(in_pipeline_event)
