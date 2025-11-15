@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Self, TYPE_CHECKING
 
 from src.domains import BaseEntity
@@ -56,7 +56,7 @@ class EventOut(BaseEntity):
             event_id=gen_id(),
             state=EventOutState.CREATED,
             user_id=user.user_id,
-            event_timestamp=datetime.now(),
+            event_timestamp=datetime.now(timezone.utc),
             linked_in_events_ids=sorted(in_event.event_id for in_event in linked_in_events),
             **kwargs,
         )

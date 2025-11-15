@@ -1,4 +1,6 @@
 import hashlib
+from datetime import datetime, timezone
+
 import ulid
 
 from collections import defaultdict
@@ -28,3 +30,6 @@ def gen_id() -> str:
     return ulid.new()   # 01HZXQ1M0P6J1Q4WG9T79E9G6N
 
 
+def is_same_utc_day(ts: datetime) -> bool:
+    now = datetime.now(timezone.utc)
+    return ts.date() == now.date()
