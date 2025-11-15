@@ -54,7 +54,7 @@ class ReadyToPayStrategy(BaseStrategy):
         return created_out_events
 
     @staticmethod
-    def judge_out_event(out_events: set[EventOut], **kwargs) -> None:
+    def judge_out_event(in_events: list[EventIn], out_events: set[EventOut], **kwargs) -> None:
         # ignore other
         bank_link_out_events = {e for e in out_events if e.event_type == EventOutType.BANK_LINK_NUDGE_SMS}
         if not bank_link_out_events:

@@ -106,11 +106,15 @@ def cron_job_for_input_event(event_timestamp: datetime = None):
         # create new out events for user
         created_out_events = set()
         for strategy in event_strategies:
-            created_out_events |= strategy.extend_out_event(in_events=user_events_in, out_events=user_events_out)
+            created_out_events |= strategy.extend_out_event(
+                in_events=user_events_in,
+                out_events=user_events_out,
+                user=user,
+            )
 
         # push or suppress created event
         for strategy in event_strategies:
-            strategy.judge_out_event(out_events=user_events_out)
+            strategy.judge_out_event(in_events=user_events_in, out_events=user_events_out)
 
         # write new out events for current user to DB
         event_out_app_impl.bulk_create(out_event=created_out_events)

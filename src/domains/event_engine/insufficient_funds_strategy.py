@@ -8,7 +8,7 @@ EXPLANATION_TEMPLATE_SUPPRESSED = 'Remind message already happen today (exist ou
 DELAY_BETWEEN_SIGNUP_COMPLETED_AND_LINK_BANK_SUCCESS_SEC = 24 * 60 * 60
 
 
-class ReadyToPayStrategy(BaseStrategy):
+class InsufficientFundsStrategy(BaseStrategy):
 
     @staticmethod
     def extend_out_event(in_events: list[EventIn], out_events: set[EventOut], user: User, **kwargs) -> set[EventOut]:
@@ -24,7 +24,7 @@ class ReadyToPayStrategy(BaseStrategy):
             tmp_out_event = EventOut.factory(
                 linked_in_events=[in_event],  # payment failed
                 user=user,
-                event_type=EventOutType.BANK_LINK_NUDGE_SMS,
+                event_type=EventOutType.INSUFFICIENT_FUNDS_EMAIL,
             )
             # add only brand-new events
             if tmp_out_event not in out_events:
@@ -36,7 +36,7 @@ class ReadyToPayStrategy(BaseStrategy):
         return created_out_events
 
     @staticmethod
-    def judge_out_event(out_events: set[EventOut], **kwargs) -> None:
+    def judge_out_event(in_events: list[EventIn], out_events: set[EventOut], **kwargs) -> None:
         # ignore other
         bank_link_out_events = {e for e in out_events if e.event_type == EventOutType.INSUFFICIENT_FUNDS_EMAIL}
         if not bank_link_out_events:

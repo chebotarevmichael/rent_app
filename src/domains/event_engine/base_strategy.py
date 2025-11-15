@@ -24,7 +24,7 @@ class BaseStrategy(ABC):
 
     @staticmethod
     @abstractmethod
-    def judge_out_event(out_events: set[EventOut], **kwargs):
+    def judge_out_event(in_events: list[EventIn], out_events: set[EventOut], **kwargs):
         # На основе существующих исходящих событий, времени, настроек в отдельной стране и т.п. решить,
         # какие события должны быть подавлены и проигнорированы.
         raise NotImplementedError
