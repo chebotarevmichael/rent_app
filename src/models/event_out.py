@@ -1,15 +1,39 @@
+from __future__ import annotations
+
 from datetime import datetime, timezone
+from enum import Enum
 from typing import Self, TYPE_CHECKING
 
-from src.domains import BaseEntity
-from src.enums import EventOutState, EventOutType
+from src.models import Base
 from src.tools import int_hash, gen_id
 
 if TYPE_CHECKING:
-    from src.domains import User, EventIn
+    from src.models import EventIn, User
 
 
-class EventOut(BaseEntity):
+class EventOutType(str, Enum):
+    WELCOME_EMAIL = 'WELCOME_EMAIL'
+    BANK_LINK_NUDGE_SMS = 'BANK_LINK_NUDGE_SMS'
+    INSUFFICIENT_FUNDS_EMAIL = 'INSUFFICIENT_FUNDS_EMAIL'
+    HIGH_RISK_ALERT = 'HIGH_RISK_ALERT'
+
+
+class EventOutState(str, Enum):
+    # only in memory, this state can not be in DB
+    # TODO: в реальной жизни этого статуса бы не было, в таблице state IS NOT NULL, а у энтити state при создании был бы None.
+    #  но т.к. в текущем коде не схемы БД, сделал статус в явном виде, иначе было бы не понятно.
+    CREATED = 'CREATED'
+
+    # processing
+    READY = 'READY'
+    PROCESSING = 'PROCESSING'
+
+    # finished
+    DONE = 'DONE'
+    SUPPRESSED = 'SUPPRESSED'
+
+
+class EventOut(Base):
     event_id: str
 
     # fields for hash
@@ -60,3 +84,13 @@ class EventOut(BaseEntity):
             linked_in_events_ids=sorted(in_event.event_id for in_event in linked_in_events),
             **kwargs,
         )
+
+    # === ORM methods ===
+
+    # TODO: it was copied from EventIn. I don't want to create to many class (even Mixins) because it will make code
+    #  less readable
+
+    @classmethod
+    def bulk_get_by_user_ids(cls, user_ids: list[str]) -> list[EventIn]:
+        _user_ids_set = set(user_ids)
+        return [event for event in cls._get_table().values() if event.user_id in _user_ids_set]

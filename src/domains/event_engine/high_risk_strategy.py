@@ -1,6 +1,5 @@
-from src.domains import EventIn, EventOut, User
+from src.models import EventIn, EventOut, User, EventInType, EventOutType, EventOutState
 from src.domains.event_engine import BaseStrategy
-from src.enums import EventInType, EventOutType, EventOutState
 
 
 EXPLANATION_TEMPLATE_OK = 'High risk! {limit} payment attempts failed (in event ids: {in_event_ids})'

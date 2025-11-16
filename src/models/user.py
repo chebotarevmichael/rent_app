@@ -1,13 +1,20 @@
-from src.domains import BaseEntity
-from src.enums import RiskSegment
+from enum import Enum
+
+from src.models import Base
 
 
-class User(BaseEntity):
+class UserRiskSegment(str, Enum):
+    LIGHT = 'LIGHT'
+    MEDIUM = 'MEDIUM'
+    HIGH = 'HIGH'
+
+
+class User(Base):
     user_id: str
     email: str | None
     country: str | None
     marketing_opt_in: bool
-    risk_segment: RiskSegment
+    risk_segment: UserRiskSegment
 
     # TODO: add email validator
     # TODO: add country validator

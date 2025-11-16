@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from src.domains import EventIn, EventOut, User
+from src.models import EventIn, EventOut, User
 
 event_strategies: list[type[BaseStrategy]] = []
 
