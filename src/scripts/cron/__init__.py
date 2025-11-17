@@ -1,0 +1,1 @@
+from .out_events_generator import cron_generate_out_events
