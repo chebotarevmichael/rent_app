@@ -9,11 +9,12 @@ from typing import Any, Self
 from src.models import Base
 
 
+# TODO: в ТЗ типы событий написаны строчными буквами (а так конечно хочется сделать единообразно - капсом)
 class EventInType(str, Enum):
-    SIGNUP_COMPLETED = 'SIGNUP_COMPLETED'
-    LINK_BANK_SUCCESS = 'LINK_BANK_SUCCESS'
-    PAYMENT_INITIATED = 'PAYMENT_INITIATED'
-    PAYMENT_FAILED = 'PAYMENT_FAILED'
+    SIGNUP_COMPLETED = 'signup_completed'
+    LINK_BANK_SUCCESS = 'link_bank_success'
+    PAYMENT_INITIATED = 'payment_initiated'
+    PAYMENT_FAILED = 'payment_failed'
 
 
 # TODO: when we will have new events with another format, we will create abstract class Event and families of events
@@ -64,6 +65,6 @@ class EventIn(Base):
         return [event for event in cls._get_table().values() if event.event_timestamp >= ts]
 
     @classmethod
-    def bulk_get_by_user_ids(cls, user_ids: list[str]) -> list[EventIn]:
+    def bulk_get_by_user_ids(cls, user_ids: list[str]) -> list[Self]:
         _user_ids_set = set(user_ids)
         return [event for event in cls._get_table().values() if event.user_id in _user_ids_set]

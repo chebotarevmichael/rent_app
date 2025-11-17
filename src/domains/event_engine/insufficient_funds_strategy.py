@@ -52,7 +52,7 @@ class InsufficientFundsStrategy(BaseStrategy):
         if in_pipeline_event is None:
             in_pipeline_event = bank_link_out_events.pop()  # event in CREATED state
             in_pipeline_event.state = EventOutState.READY
-            in_pipeline_event.explanation = EXPLANATION_TEMPLATE_OK.format(in_event_ids=in_pipeline_event.linked_in_events)
+            in_pipeline_event.explanation = EXPLANATION_TEMPLATE_OK.format(in_event_ids=in_pipeline_event.linked_in_events_ids)
 
         # suppress other
         bank_link_out_events.discard(in_pipeline_event)

@@ -7,7 +7,7 @@ EXPLANATION_TEMPLATE_SUPPRESSED = 'Alert message already exists (exist out event
 HIGH_RISK_ALERT_LIMIT = 3
 
 
-class WelcomeStrategy(BaseStrategy):
+class HighRiskStrategy(BaseStrategy):
 
     @staticmethod
     def extend_out_event(in_events: list[EventIn], out_events: set[EventOut], user: User, **kwargs) -> set[EventOut]:
@@ -82,7 +82,7 @@ class WelcomeStrategy(BaseStrategy):
             last_in_pipeline_event.state = EventOutState.READY
             last_in_pipeline_event.explanation = EXPLANATION_TEMPLATE_OK.format(
                 limit=HIGH_RISK_ALERT_LIMIT,
-                in_event_ids=last_in_pipeline_event.linked_in_events,
+                in_event_ids=last_in_pipeline_event.linked_in_events_ids,
             )
 
         # suppress other out events which were happen after last payment inited

@@ -39,7 +39,7 @@ class EventOut(Base):
     # fields for hash
     event_type: EventOutType
     user_id: str
-    linked_in_events: list[str]
+    linked_in_events_ids: list[str]
 
     state: EventOutState
     event_timestamp: datetime
@@ -91,6 +91,6 @@ class EventOut(Base):
     #  less readable
 
     @classmethod
-    def bulk_get_by_user_ids(cls, user_ids: list[str]) -> list[EventIn]:
+    def bulk_get_by_user_ids(cls, user_ids: list[str]) -> list[Self]:
         _user_ids_set = set(user_ids)
         return [event for event in cls._get_table().values() if event.user_id in _user_ids_set]
