@@ -61,7 +61,7 @@ def cron_generate_out_events(
 
         # push or suppress created event
         for strategy in event_strategies:
-            strategy.judge_out_event(in_events=user_events_in, out_events=user_events_out)
+            strategy.judge_out_event(in_events=user_events_in, out_events=user_events_out, _now=_now)
 
         # write new out events for current user to DB
         EventOut.bulk_save(entities=created_out_events)

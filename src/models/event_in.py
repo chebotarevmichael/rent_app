@@ -17,6 +17,11 @@ class EventInType(str, Enum):
     PAYMENT_FAILED = 'payment_failed'
 
 
+class EventInFailureReason(str, Enum):
+    INSUFFICIENT_FUNDS = 'INSUFFICIENT_FUNDS'
+    OTHER = 'OTHER'
+
+
 # TODO: when we will have new events with another format, we will create abstract class Event and families of events
 #  (each system usually has unified format of all events,
 #  therefore we can make one sub-class with several event types for each of service)

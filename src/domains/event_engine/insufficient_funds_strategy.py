@@ -1,4 +1,4 @@
-from src.models import EventIn, EventOut, User, EventInType, EventOutType, EventOutState
+from src.models import EventIn, EventOut, User, EventInType, EventOutType, EventOutState, EventInFailureReason
 from src.domains.event_engine import BaseStrategy
 from src.tools import is_same_utc_day
 
@@ -16,8 +16,11 @@ class InsufficientFundsStrategy(BaseStrategy):
         created_out_events: set[EventOut] = set()
 
         for in_event in in_events:
-            # ignore in events with another type
+            # ignore in_events with another type
             if in_event.event_type != EventInType.PAYMENT_FAILED:
+                continue
+            # ignore in_events with wrong failure reason
+            if in_event.properties.get('failure_reason') != EventInFailureReason.INSUFFICIENT_FUNDS:
                 continue
 
             tmp_out_event = EventOut.factory(
@@ -38,20 +41,32 @@ class InsufficientFundsStrategy(BaseStrategy):
     @staticmethod
     def judge_out_event(in_events: list[EventIn], out_events: set[EventOut], **kwargs) -> None:
         # ignore other
-        bank_link_out_events = {e for e in out_events if e.event_type == EventOutType.INSUFFICIENT_FUNDS_EMAIL}
+        bank_link_out_events = set()
+        for out_event in out_events:
+            # skip other
+            if out_event.event_type != EventOutType.INSUFFICIENT_FUNDS_EMAIL:
+                continue
+            # skip other calendar days
+            if not is_same_utc_day(ts=out_event.event_timestamp, _now=kwargs.get('_now')):
+                continue
+            bank_link_out_events.add(out_event)
+
         if not bank_link_out_events:
             return
 
         # get an actual existing out event
         in_pipeline_event = max(
-            (e for e in bank_link_out_events if e.is_in_pipeline and is_same_utc_day(ts=e.event_timestamp)),
+            (e for e in bank_link_out_events if e.is_in_pipeline),
             key=lambda e: e.event_timestamp,
             default=None,
         )
 
         # choose something, if we don't have any ready/processing/done event on this calendar day
         if in_pipeline_event is None:
-            in_pipeline_event = bank_link_out_events.pop()  # event in CREATED state
+            in_pipeline_event = min(
+                bank_link_out_events,
+                key=lambda e: e.event_timestamp,  # the earliest event in CREATED state
+            )
             in_pipeline_event.state = EventOutState.READY
             in_pipeline_event.explanation = EXPLANATION_TEMPLATE_OK.format(in_event_ids=in_pipeline_event.linked_in_events_ids)
 

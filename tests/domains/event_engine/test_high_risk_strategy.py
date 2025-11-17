@@ -2,7 +2,6 @@ from datetime import datetime, timezone, timedelta
 
 from src.models import EventOut, EventOutType, EventInType, EventOutState
 from src.scripts.cron import cron_generate_out_events
-from src.tools import group_list_by_key
 
 from tests.conftest import user, event_in
 
@@ -22,8 +21,7 @@ def test_basic(user, event_in):
 
     # no high risk events
     out_events: list[EventOut] = EventOut.bulk_get_by_user_ids(user_ids=[user.user_id])
-    assert len(out_events) == 2, 'event funds х2'
-    assert {e.event_type for e in out_events} == {EventOutType.INSUFFICIENT_FUNDS_EMAIL}, 'only INSUFFICIENT_FUNDS_EMAIL'
+    assert len(out_events) == 0, 'no events'
 
     # yet another payment_failed input event
     payment_failed_3 = event_in(event_type=EventInType.PAYMENT_FAILED, event_timestamp=_now + timedelta(hours=3), user=user)
@@ -33,13 +31,10 @@ def test_basic(user, event_in):
 
     # check the result
     out_events: list[EventOut] = EventOut.bulk_get_by_user_ids(user_ids=[user.user_id])
-    event_type2events = group_list_by_key(out_events, key='event_type')
 
-    assert len(out_events) == 3 + 1, 'out events: funds x3 + high_risk x1'
-    assert len(event_type2events[EventOutType.INSUFFICIENT_FUNDS_EMAIL]) == 3, 'funds x3'
-    assert len(event_type2events[EventOutType.HIGH_RISK_ALERT]) == 1, 'high_risk x1'
+    assert len(out_events) == 1, 'out event: high_risk'
 
-    high_risk, *_ = event_type2events[EventOutType.HIGH_RISK_ALERT]
+    high_risk, *_ = out_events
     assert high_risk.event_type == EventOutType.HIGH_RISK_ALERT, 'event type is not HIGH_RISK_ALERT'
     assert high_risk.user_id == user.user_id, 'user_id'
     assert high_risk.state == EventOutState.READY, 'state is not READY'
@@ -65,8 +60,7 @@ def test_saving_by_payment_inited(user, event_in):
 
     # no high risk events
     out_events: list[EventOut] = EventOut.bulk_get_by_user_ids(user_ids=[user.user_id])
-    assert len(out_events) == 2, 'event funds х2'
-    assert {e.event_type for e in out_events} == {EventOutType.INSUFFICIENT_FUNDS_EMAIL}, 'only INSUFFICIENT_FUNDS_EMAIL'
+    assert len(out_events) == 0, 'no event'
 
     # yet another payment_failed input event
     event_in(event_type=EventInType.PAYMENT_FAILED, event_timestamp=_now + timedelta(days=30), user=user)
@@ -77,8 +71,7 @@ def test_saving_by_payment_inited(user, event_in):
 
     # check the result
     out_events: list[EventOut] = EventOut.bulk_get_by_user_ids(user_ids=[user.user_id])
-    assert len(out_events) == 4, 'event funds х3'
-    assert {e.event_type for e in out_events} == {EventOutType.INSUFFICIENT_FUNDS_EMAIL}, 'only INSUFFICIENT_FUNDS_EMAIL'
+    assert len(out_events) == 0, 'still no event'
 
 
 def test_old_payment_inited_not_saved(user, event_in):
@@ -100,13 +93,10 @@ def test_old_payment_inited_not_saved(user, event_in):
 
     # result
     out_events: list[EventOut] = EventOut.bulk_get_by_user_ids(user_ids=[user.user_id])
-    event_type2events = group_list_by_key(out_events, key='event_type')
 
-    assert len(out_events) == 3 + 1, 'event funds х3 + high risk x1'
-    assert len(event_type2events[EventOutType.INSUFFICIENT_FUNDS_EMAIL]) == 3, 'INSUFFICIENT_FUNDS_EMAIL x3'
-    assert len(event_type2events[EventOutType.HIGH_RISK_ALERT]) == 1, 'HIGH_RISK_ALERT x1'
+    assert len(out_events) == 1, 'high risk x1'
 
-    high_risk, *_ = event_type2events[EventOutType.HIGH_RISK_ALERT]
+    high_risk, *_ = out_events
     assert high_risk.event_type == EventOutType.HIGH_RISK_ALERT, 'event type is not HIGH_RISK_ALERT'
     assert high_risk.user_id == user.user_id, 'user_id'
     assert high_risk.state == EventOutState.READY, 'state is not READY'
@@ -134,13 +124,10 @@ def test_payment_failed_x4(user, event_in):
     # result
     out_events: list[EventOut] = EventOut.bulk_get_by_user_ids(user_ids=[user.user_id])
     out_events.sort(key=lambda x: x.event_timestamp)
-    event_type2events = group_list_by_key(out_events, key='event_type')
 
-    assert len(out_events) == 4 + 2, 'event funds х4 + high risk x2'
-    assert len(event_type2events[EventOutType.INSUFFICIENT_FUNDS_EMAIL]) == 4, 'INSUFFICIENT_FUNDS_EMAIL x4'
-    assert len(event_type2events[EventOutType.HIGH_RISK_ALERT]) == 2, 'HIGH_RISK_ALERT x2'
+    assert len(out_events) == 2, 'high risk x2'
 
-    high_risk_1, high_risk_2 = event_type2events[EventOutType.HIGH_RISK_ALERT]
+    high_risk_1, high_risk_2 = out_events
 
     # high_risk_1 (READY)
     assert high_risk_1.event_type == EventOutType.HIGH_RISK_ALERT, '#1 event type is not HIGH_RISK_ALERT'
@@ -179,15 +166,12 @@ def test_payment_failed_twice_but_not_suppressed(user, event_in):
     # result
     out_events: list[EventOut] = EventOut.bulk_get_by_user_ids(user_ids=[user.user_id])
     out_events.sort(key=lambda x: x.event_timestamp)
-    event_type2events: dict[EventOutType, list[EventOut]] = group_list_by_key(out_events, key='event_type')
 
-    assert len(out_events) == 3 + 1, 'event funds х3 + high risk x1'
-    assert len(event_type2events[EventOutType.INSUFFICIENT_FUNDS_EMAIL]) == 3, 'INSUFFICIENT_FUNDS_EMAIL x3'
-    assert len(event_type2events[EventOutType.HIGH_RISK_ALERT]) == 1, 'HIGH_RISK_ALERT x1'
+    assert len(out_events) == 1, 'high risk x1'
 
     #
     # === AFTER 1 MONTH, User again failed 3 payments ==
-    high_risk_1, *_ = event_type2events[EventOutType.HIGH_RISK_ALERT]
+    high_risk_1, *_ = out_events
     event_in(event_type=EventInType.PAYMENT_INITIATED, event_timestamp=_now + timedelta(hours=10), user=user)
 
     _next_month = datetime.now(tz=timezone.utc) + timedelta(days=30)
@@ -202,14 +186,10 @@ def test_payment_failed_twice_but_not_suppressed(user, event_in):
     # result
     out_events: list[EventOut] = EventOut.bulk_get_by_user_ids(user_ids=[user.user_id])
     out_events.sort(key=lambda x: x.event_timestamp)
-    event_type2events = group_list_by_key(out_events, key='event_type')
 
-    assert len(out_events) == 6 + 2, 'event funds х6 + high risk x2'
-    assert len(event_type2events[EventOutType.INSUFFICIENT_FUNDS_EMAIL]) == 6, 'INSUFFICIENT_FUNDS_EMAIL x6'
-    assert len(event_type2events[EventOutType.HIGH_RISK_ALERT]) == 2, 'HIGH_RISK_ALERT x2'
+    assert len(out_events) == 2, 'high risk x2'
 
-
-    high_risk_1, high_risk_2 = event_type2events[EventOutType.HIGH_RISK_ALERT]
+    high_risk_1, high_risk_2 = out_events
 
     # high_risk_1 (READY)
     assert high_risk_1.event_type == EventOutType.HIGH_RISK_ALERT, '#1 event type is not HIGH_RISK_ALERT'
