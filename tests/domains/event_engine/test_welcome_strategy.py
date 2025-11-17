@@ -30,6 +30,24 @@ def test_basic(user, event_in):
     assert out.linked_in_events_ids == [signup.event_id], 'linked_in_events_ids'
 
 
+def test_no_marketing_opt_in(user, event_in):
+    _ = "Нет флага marketing_opt_in"
+
+    _now = datetime.now(tz=timezone.utc)
+
+    # build input data
+    user = user(marketing_opt_in=False)
+    event_in(event_type=EventInType.SIGNUP_COMPLETED, event_timestamp=_now, user=user)
+
+    # call welcome strategy
+    cron_generate_out_events(actual_users_ids=[user.user_id])
+
+    # check the result
+    out_events: list[EventOut] = EventOut.bulk_get_by_user_ids(user_ids=[user.user_id])
+
+    assert len(out_events) == 0, 'No out events'
+
+
 def test_3_in_events(user, event_in):
     _ = "3 Одновременно. 3 входящих, 1 успешное и 2 подавленных"
 
