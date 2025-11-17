@@ -75,13 +75,13 @@ class EventOut(Base):
     @classmethod
     def factory(cls, linked_in_events: list[EventIn], user: User, **kwargs) -> Self:
         # TODO: потенциально могут быть linked_out_events (например: "если уже посылали письмо, значит теперь посылаем смс")
-
+        linked_in_events.sort(key=lambda e: e.event_timestamp)
         return cls(
             event_id=gen_id(),
             state=EventOutState.CREATED,
             user_id=user.user_id,
             event_timestamp=datetime.now(timezone.utc),
-            linked_in_events_ids=sorted(in_event.event_id for in_event in linked_in_events),
+            linked_in_events_ids=[in_event.event_id for in_event in linked_in_events],
             **kwargs,
         )
 

@@ -35,7 +35,7 @@ class ReadyToPayStrategy(BaseStrategy):
 
             # the delay between both event must be less than required
             _delta = last_signup_completed_in_event.event_timestamp - in_event.event_timestamp
-            if _delta.total_seconds() > DELAY_BETWEEN_SIGNUP_COMPLETED_AND_LINK_BANK_SUCCESS_SEC:
+            if abs(_delta.total_seconds()) > DELAY_BETWEEN_SIGNUP_COMPLETED_AND_LINK_BANK_SUCCESS_SEC:
                 continue
 
             tmp_out_event = EventOut.factory(
@@ -64,7 +64,10 @@ class ReadyToPayStrategy(BaseStrategy):
 
         # choose something, if we don't have any ready/processing/done event
         if in_pipeline_event is None:
-            in_pipeline_event = bank_link_out_events.pop()  # event in CREATED state
+            in_pipeline_event = min(
+                bank_link_out_events,
+                key=lambda e: e.event_timestamp,    # the earliest event in CREATED state
+            )
             in_pipeline_event.state = EventOutState.READY
             in_pipeline_event.explanation = EXPLANATION_TEMPLATE_OK.format(in_event_ids=in_pipeline_event.linked_in_events_ids)
 

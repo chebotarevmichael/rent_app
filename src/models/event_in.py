@@ -21,7 +21,7 @@ class EventInType(str, Enum):
 #  (each system usually has unified format of all events,
 #  therefore we can make one sub-class with several event types for each of service)
 class EventIn(Base):
-    event_id: str
+    event_id: str  # format: '{event_type}:{user_id}:{event_timestamp.isoformat()}'
     event_type: EventInType
 
     user_id: str

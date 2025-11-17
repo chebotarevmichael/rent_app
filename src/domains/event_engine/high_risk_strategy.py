@@ -17,7 +17,7 @@ class HighRiskStrategy(BaseStrategy):
         # get in events linked with payment
         payment_in_events = sorted(
             {e for e in in_events if e.event_type in {EventInType.PAYMENT_FAILED, EventInType.PAYMENT_INITIATED}},
-            key=lambda e: e.timestamp,
+            key=lambda e: e.event_timestamp,
         )
         payment_failed_in_row = []
         for in_event in reversed(payment_in_events):
