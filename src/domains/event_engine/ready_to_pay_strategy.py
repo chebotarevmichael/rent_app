@@ -42,6 +42,7 @@ class ReadyToPayStrategy(BaseStrategy):
                 linked_in_events=[last_signup_completed_in_event, in_event], # signup_completed + link_bank_success
                 user=user,
                 event_type=EventOutType.BANK_LINK_NUDGE_SMS,
+                event_timestamp=kwargs.get('_now'),
             )
             # add only brand-new events
             if tmp_out_event not in out_events:

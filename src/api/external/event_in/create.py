@@ -40,6 +40,7 @@ class RequestEvent(BaseModel):
 
 @router.post('/create', summary='Ingest an event', tags=['events'])
 def create(request: RequestEvent = Body(...)):
+    # TODO: тут бы ограничить, что нельзя принимать события "из будущего"
     # создаем событие
     new_event = EventIn.factory(**request.model_dump())
     if EventIn.is_exist(db_id=new_event.event_id):

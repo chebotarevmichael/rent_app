@@ -15,7 +15,7 @@ def test_basic(user, event_in):
     user = user()
     signup = event_in(event_type=EventInType.SIGNUP_COMPLETED, event_timestamp=_now, user=user)
 
-    # call welcome strategy
+    # call strategy
     cron_generate_out_events(actual_users_ids=[user.user_id])
 
     # check the result
@@ -39,7 +39,7 @@ def test_no_marketing_opt_in(user, event_in):
     user = user(marketing_opt_in=False)
     event_in(event_type=EventInType.SIGNUP_COMPLETED, event_timestamp=_now, user=user)
 
-    # call welcome strategy
+    # call strategy
     cron_generate_out_events(actual_users_ids=[user.user_id])
 
     # check the result
@@ -59,7 +59,7 @@ def test_3_in_events(user, event_in):
     in_2 = event_in(event_type=EventInType.SIGNUP_COMPLETED, event_timestamp=_now + timedelta(seconds=1), user=user)
     in_3 = event_in(event_type=EventInType.SIGNUP_COMPLETED, event_timestamp=_now + timedelta(seconds=600), user=user)
 
-    # call welcome strategy
+    # call strategy
     cron_generate_out_events(actual_users_ids=[user.user_id])
 
     # check the result

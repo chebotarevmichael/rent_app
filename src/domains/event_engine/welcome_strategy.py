@@ -22,6 +22,7 @@ class WelcomeStrategy(BaseStrategy):
                     linked_in_events=[in_event],
                     user=user,
                     event_type=EventOutType.WELCOME_EMAIL,
+                    event_timestamp=kwargs.get('_now'),
                 )
                 # add only brand-new events
                 if tmp_out_event not in out_events:

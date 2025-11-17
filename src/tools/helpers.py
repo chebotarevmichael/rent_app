@@ -1,5 +1,6 @@
 import hashlib
 from datetime import datetime, timezone
+from typing import Any
 
 import ulid
 
@@ -7,14 +8,14 @@ from collections import defaultdict
 from collections.abc import Iterable
 
 
-def group_list_by_key(items: Iterable, key: str) -> dict[str, list]:
+def group_list_by_key(items: Iterable, key: str) -> dict[Any, list]:
     _key2item = defaultdict(list)
     for item in items:
         _key2item[getattr(item, key)].append(item)
     return _key2item
 
 
-def group_set_by_key(items: Iterable, key: str) -> dict[str, set]:
+def group_set_by_key(items: Iterable, key: str) -> dict[Any, set]:
     _key2item = defaultdict(set)
     for item in items:
         _key2item[getattr(item, key)].add(item)

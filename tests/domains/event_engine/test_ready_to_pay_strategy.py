@@ -87,7 +87,7 @@ def test_double_bank_success(user, event_in):
     bank_success_1 = event_in(event_type=EventInType.LINK_BANK_SUCCESS, event_timestamp=_now, user=user)
     bank_success_2 = event_in(event_type=EventInType.LINK_BANK_SUCCESS, event_timestamp=_now + timedelta(seconds=1), user=user)
 
-    # call welcome strategy
+    # call strategy
     cron_generate_out_events(actual_users_ids=[user.user_id])
 
     # check the result

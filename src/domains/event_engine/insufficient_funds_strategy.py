@@ -3,7 +3,7 @@ from src.domains.event_engine import BaseStrategy
 from src.tools import is_same_utc_day
 
 EXPLANATION_TEMPLATE_OK = 'Remind message was approved (in event ids: {in_event_ids})'
-EXPLANATION_TEMPLATE_SUPPRESSED = 'Remind message already happen today (exist out event_id: {out_event_id})'
+EXPLANATION_TEMPLATE_SUPPRESSED = 'Remind message already happened today (exist out event_id: {out_event_id})'
 DELAY_BETWEEN_SIGNUP_COMPLETED_AND_LINK_BANK_SUCCESS_SEC = 24 * 60 * 60
 
 
@@ -24,6 +24,7 @@ class InsufficientFundsStrategy(BaseStrategy):
                 linked_in_events=[in_event],  # payment failed
                 user=user,
                 event_type=EventOutType.INSUFFICIENT_FUNDS_EMAIL,
+                event_timestamp=kwargs.get('_now'),
             )
             # add only brand-new events
             if tmp_out_event not in out_events:

@@ -80,7 +80,7 @@ class EventOut(Base):
             event_id=gen_id(),
             state=EventOutState.CREATED,
             user_id=user.user_id,
-            event_timestamp=datetime.now(timezone.utc),
+            event_timestamp=kwargs.pop('event_timestamp', None) or datetime.now(timezone.utc),
             linked_in_events_ids=[in_event.event_id for in_event in linked_in_events],
             **kwargs,
         )
