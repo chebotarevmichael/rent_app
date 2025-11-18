@@ -1,4 +1,6 @@
-from src.models import EventIn, EventOut, User, EventInType, EventOutType, EventOutState, EventInFailureReason
+from src.models import (
+    EventIn, EventOut, User, EventInType, EventOutType, EventOutState, EventInFailureReason, EventOutChannel
+)
 from src.domains.event_engine import BaseStrategy
 from src.tools import is_same_utc_day
 
@@ -27,6 +29,7 @@ class InsufficientFundsStrategy(BaseStrategy):
                 linked_in_events=[in_event],  # payment failed
                 user=user,
                 event_type=EventOutType.INSUFFICIENT_FUNDS_EMAIL,
+                channel=EventOutChannel.EMAIL,
                 event_timestamp=kwargs.get('_now'),
             )
             # add only brand-new events

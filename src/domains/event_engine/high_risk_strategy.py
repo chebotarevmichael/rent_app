@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from src.models import EventIn, EventOut, User, EventInType, EventOutType, EventOutState
+from src.models import EventIn, EventOut, User, EventInType, EventOutType, EventOutState, EventOutChannel
 from src.domains.event_engine import BaseStrategy
 
 
@@ -47,6 +47,7 @@ class HighRiskStrategy(BaseStrategy):
                     linked_in_events=payment_failed_in_row,
                     user=user,
                     event_type=EventOutType.HIGH_RISK_ALERT,
+                    channel=EventOutChannel.INTERNAL_ALERT,
                     event_timestamp=kwargs.get('_now'),
                 )
                 # add only brand-new events

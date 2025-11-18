@@ -1,4 +1,4 @@
-from src.models import EventIn, EventOut, User, EventInType, EventOutType, EventOutState
+from src.models import EventIn, EventOut, User, EventInType, EventOutType, EventOutState, EventOutChannel
 from src.domains.event_engine import BaseStrategy
 
 
@@ -22,6 +22,7 @@ class WelcomeStrategy(BaseStrategy):
                     linked_in_events=[in_event],
                     user=user,
                     event_type=EventOutType.WELCOME_EMAIL,
+                    channel=EventOutChannel.EMAIL,
                     event_timestamp=kwargs.get('_now'),
                 )
                 # add only brand-new events

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from datetime import datetime, timezone
 from enum import Enum
 from typing import Self, TYPE_CHECKING
@@ -11,6 +12,9 @@ if TYPE_CHECKING:
     from src.models import EventIn, User
 
 
+logger = logging.getLogger(__name__)
+
+
 class EventOutType(str, Enum):
     WELCOME_EMAIL = 'WELCOME_EMAIL'
     BANK_LINK_NUDGE_SMS = 'BANK_LINK_NUDGE_SMS'
@@ -19,20 +23,25 @@ class EventOutType(str, Enum):
 
 
 class EventOutState(str, Enum):
-    # only in memory, this state can not be in DB
     # TODO: в реальной жизни этого статуса бы не было, в таблице state IS NOT NULL, а у энтити state при создании был бы None.
     #  но т.к. в текущем коде не схемы БД, сделал статус в явном виде, иначе было бы не понятно.
-    CREATED = 'CREATED'
+    CREATED = 'CREATED'         # only in memory, this state can not be in DB
 
-    # processing
-    READY = 'READY'
+    READY = 'READY'             # processing
     PROCESSING = 'PROCESSING'
 
-    # finished
-    DONE = 'DONE'
+    DONE = 'DONE'               # finished
     SUPPRESSED = 'SUPPRESSED'
 
 
+class EventOutChannel(str, Enum):
+    SMS = 'SMS'
+    EMAIL = 'EMAIL'
+    INTERNAL_ALERT = 'INTERNAL_ALERT'
+
+
+# TODO: вероятно упрощение, т.к. для 100500 видов событий одного класса явно было бы недостаточно,
+#  но для оговоренных "от 4 до 20шт" должно в пределе хватать (по крайней мере у нас не будет 4-20 полупустых классов)
 class EventOut(Base):
     event_id: str
 
@@ -42,7 +51,8 @@ class EventOut(Base):
     linked_in_events_ids: list[str]
 
     state: EventOutState
-    event_timestamp: datetime
+    channel: EventOutChannel
+    event_timestamp: datetime       # TODO: сделать просто ts
     explanation: str | None = None
 
     @property
@@ -69,13 +79,26 @@ class EventOut(Base):
     # TODO: какое действие должно быть? послать в канал или еще что
     #  только скорее должно быть перенесено в апку
     def execute(self):
-        pass
+        logger.info(
+            'user_id=%s',
+            self.user_id,
+        )
+        #     template_name (WELCOME_EMAIL, etc.)
+        #
+        #     channel ("email" or "sms" or "internal_alert")
+        #
+        #     timestamp
+        #
+        #     why we decided to send (short reason string)
         self.state = EventOutState.DONE
+
 
     @classmethod
     def factory(cls, linked_in_events: list[EventIn], user: User, **kwargs) -> Self:
-        # TODO: потенциально могут быть linked_out_events (например: "если уже посылали письмо, значит теперь посылаем смс")
+        # TODO: потенциально кроме linked_IN_events могут добавиться linked_OUT_events
+        #  (например: "если уже посылали письмо, значит теперь посылаем смс")
         linked_in_events.sort(key=lambda e: e.event_timestamp)
+
         return cls(
             event_id=gen_id(),
             state=EventOutState.CREATED,

@@ -1,4 +1,4 @@
-from src.models import EventIn, EventOut, User, EventInType, EventOutType, EventOutState
+from src.models import EventIn, EventOut, User, EventInType, EventOutType, EventOutState, EventOutChannel
 from src.domains.event_engine import BaseStrategy
 
 
@@ -42,6 +42,7 @@ class ReadyToPayStrategy(BaseStrategy):
                 linked_in_events=[last_signup_completed_in_event, in_event], # signup_completed + link_bank_success
                 user=user,
                 event_type=EventOutType.BANK_LINK_NUDGE_SMS,
+                channel=EventOutChannel.SMS,
                 event_timestamp=kwargs.get('_now'),
             )
             # add only brand-new events
