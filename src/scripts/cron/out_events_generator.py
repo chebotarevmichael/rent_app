@@ -10,13 +10,13 @@ from src.tools import group_list_by_key, group_set_by_key
 
 # TODO: добавить автозапуск
 def cron_generate_out_events(
-        # for manual execution in production (dangerous!)
+        # for manual execution in production
         event_timestamp: datetime = None,
         # for tests
         actual_users_ids: list[str] = None,
         _now: datetime = None,
 ):
-    # TODO: потеряшек; так же наличие параметра упрощает написание тестов.
+    # TODO:
     #  С учетом ввводных "Пользователей 100к и будет 1кк через год" и "РПС по ивентам 5-20", крон скрипт будет
     #  выгребать от 5*60=300 и да 20*60=1200 событий вначале при 100к пользователей;
     #  Даже при 1кк юзеров в будущем, будет от 3.000 до 12.000 событий в минуту.
