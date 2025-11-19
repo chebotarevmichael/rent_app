@@ -14,7 +14,7 @@ DELAY_BETWEEN_SIGNUP_COMPLETED_AND_LINK_BANK_SUCCESS_SEC = 24 * 60 * 60
 class InsufficientFundsStrategy(BaseStrategy):
 
     @staticmethod
-    def extend_out_event(in_events: list[EventIn], out_events: set[EventOut], user: User, **kwargs) -> set[EventOut]:
+    def extend_out_events(in_events: list[EventIn], out_events: set[EventOut], user: User, **kwargs) -> set[EventOut]:
         # If payment_failed with failure_reason == "INSUFFICIENT_FUNDS", send “INSUFFICIENT_FUNDS_EMAIL`,
         # BUT only once per user per calendar day.
         created_out_events: set[EventOut] = set()
@@ -45,7 +45,7 @@ class InsufficientFundsStrategy(BaseStrategy):
         return created_out_events
 
     @staticmethod
-    def judge_out_event(in_events: list[EventIn], out_events: set[EventOut], **kwargs) -> None:
+    def judge_out_events(in_events: list[EventIn], out_events: set[EventOut], **kwargs) -> None:
         # ignore other
         bank_link_out_events = set()
         for out_event in out_events:

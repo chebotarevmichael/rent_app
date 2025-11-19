@@ -19,7 +19,7 @@ class HighRiskStrategy(BaseStrategy):
         )
 
     @staticmethod
-    def extend_out_event(in_events: list[EventIn], out_events: set[EventOut], user: User, **kwargs) -> set[EventOut]:
+    def extend_out_events(in_events: list[EventIn], out_events: set[EventOut], user: User, **kwargs) -> set[EventOut]:
         # If payment_failed with attempt_number >= 3, escalate to “HIGH_RISK_ALERT”
         created_out_events: set[EventOut] = set()
 
@@ -62,7 +62,7 @@ class HighRiskStrategy(BaseStrategy):
         return created_out_events
 
     @staticmethod
-    def judge_out_event(in_events: list[EventIn], out_events: set[EventOut], **kwargs) -> None:
+    def judge_out_events(in_events: list[EventIn], out_events: set[EventOut], **kwargs) -> None:
         # get timestamp of the last successful payment
         last_initiated_ts = HighRiskStrategy.get_last_initiated_ts(in_events=in_events)
 

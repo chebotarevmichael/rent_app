@@ -38,30 +38,30 @@ def cron_generate_out_events(
     user_id2events_in: dict[str, list[EventIn]] = group_list_by_key(items=actual_users_events_in, key='user_id')
 
     # output events
-    actual_users_events_out = EventOut.bulk_get_by_user_ids(user_ids=actual_users_ids)
-    user_id2events_out = group_set_by_key(items=actual_users_events_out, key='user_id')
+    actual_users_out_events = EventOut.bulk_get_by_user_ids(user_ids=actual_users_ids)
+    user_id2out_events = group_set_by_key(items=actual_users_out_events, key='user_id')
 
     # users
     users = User.bulk_get(db_ids=actual_users_ids)
 
     for user in users:
-        user_events_in: list[EventIn] = user_id2events_in.get(user.user_id, [])
-        user_events_in.sort(key=lambda event: event.event_timestamp)
-        user_events_out: set[EventOut] = user_id2events_out.get(user.user_id, set())
+        user_in_events: list[EventIn] = user_id2events_in.get(user.user_id, [])
+        user_in_events.sort(key=lambda event: event.event_timestamp)
+        user_out_events: set[EventOut] = user_id2out_events.get(user.user_id, set())
 
         # create new out events for user
         created_out_events = set()
         for strategy in event_strategies:
-            created_out_events |= strategy.extend_out_event(
-                in_events=user_events_in,
-                out_events=user_events_out,
+            created_out_events |= strategy.extend_out_events(
+                in_events=user_in_events,
+                out_events=user_out_events,
                 user=user,
                 _now=_now,
             )
 
         # push or suppress created event
         for strategy in event_strategies:
-            strategy.judge_out_event(in_events=user_events_in, out_events=user_events_out, _now=_now)
+            strategy.judge_out_events(in_events=user_in_events, out_events=user_out_events, _now=_now)
 
         # write new out events for current user to DB
         EventOut.bulk_save(entities=created_out_events)

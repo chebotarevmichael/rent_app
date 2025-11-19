@@ -10,7 +10,7 @@ EXPLANATION_TEMPLATE_SUPPRESSED = 'Welcome message already exists (exist out eve
 class WelcomeStrategy(BaseStrategy):
 
     @staticmethod
-    def extend_out_event(in_events: list[EventIn], out_events: set[EventOut], user: User, **kwargs) -> set[EventOut]:
+    def extend_out_events(in_events: list[EventIn], out_events: set[EventOut], user: User, **kwargs) -> set[EventOut]:
         # If signup_completed AND user_traits.marketing_opt_in == true, send the “WELCOME_EMAIL”.
         created_out_events: set[EventOut] = set()
 
@@ -37,7 +37,7 @@ class WelcomeStrategy(BaseStrategy):
         return created_out_events
 
     @staticmethod
-    def judge_out_event(in_events: list[EventIn], out_events: set[EventOut], **kwargs) -> None:
+    def judge_out_events(in_events: list[EventIn], out_events: set[EventOut], **kwargs) -> None:
         # ignore other
         welcome_out_events = {e for e in out_events if e.event_type == EventOutType.WELCOME_EMAIL}
         if not welcome_out_events:
