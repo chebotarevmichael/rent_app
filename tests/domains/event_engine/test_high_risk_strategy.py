@@ -2,6 +2,7 @@ from datetime import datetime, timezone, timedelta
 
 from src.models import EventOut, EventOutType, EventInType, EventOutState
 from src.scripts.cron import cron_generate_out_events
+from src.tools import now
 
 from tests.conftest import user, event_in
 
@@ -9,7 +10,7 @@ from tests.conftest import user, event_in
 def test_basic(user, event_in):
     _ = "Базовый тест. 2 провала оплаты - ничего, на 3ий - событие high risk"
 
-    _now = datetime.now(tz=timezone.utc)
+    _now = now()
 
     # build input data
     user = user()
@@ -47,7 +48,7 @@ def test_basic(user, event_in):
 def test_saving_by_payment_inited(user, event_in):
     _ = "2 провала оплаты, 1 успешная; через 1 месяц еще 2 провала оплаты, но события high risk нету"
 
-    _now = datetime.now(tz=timezone.utc)
+    _now = now()
 
     # build input data
     user = user()
@@ -77,7 +78,7 @@ def test_saving_by_payment_inited(user, event_in):
 def test_old_payment_inited_not_saved(user, event_in):
     _ = "1 успешная месяц назад; 3 провала оплаты сейчас, поэтому событие high risk есть"
 
-    _now = datetime.now(tz=timezone.utc)
+    _now = now()
 
     # build input data
     user = user()
@@ -108,7 +109,7 @@ def test_old_payment_inited_not_saved(user, event_in):
 def test_payment_failed_x4(user, event_in):
     _ = "4 провала оплаты, есть 2 события high risk"
 
-    _now = datetime.now(tz=timezone.utc)
+    _now = now()
 
     # build input data
     user = user()
@@ -151,7 +152,7 @@ def test_payment_failed_twice_but_not_suppressed(user, event_in):
 
     #
     # === User failed 3 payments, but finally he paid ==
-    _now = datetime.now(tz=timezone.utc)
+    _now = now()
 
     # build input data
     user = user()
@@ -174,7 +175,7 @@ def test_payment_failed_twice_but_not_suppressed(user, event_in):
     high_risk_1, *_ = out_events
     event_in(event_type=EventInType.PAYMENT_INITIATED, event_timestamp=_now + timedelta(hours=10), user=user)
 
-    _next_month = datetime.now(tz=timezone.utc) + timedelta(days=30)
+    _next_month = now() + timedelta(days=30)
 
     payment_failed_4 = event_in(event_type=EventInType.PAYMENT_FAILED, event_timestamp=_next_month + timedelta(hours=1), user=user)
     payment_failed_5 = event_in(event_type=EventInType.PAYMENT_FAILED, event_timestamp=_next_month + timedelta(hours=2), user=user)

@@ -4,6 +4,7 @@ import pytest
 
 from src.models import EventOut, EventOutType, EventInType, EventOutState, EventInFailureReason
 from src.scripts.cron import cron_generate_out_events
+from src.tools import now
 
 from tests.conftest import user, event_in
 
@@ -34,7 +35,7 @@ def payment_failed_event_in(event_in, user):
 def test_basic(user, payment_failed_event_in):
     _ = "Базовый тест. Провал оплаты с нужной причиной и создается исходящее событие"
 
-    _now = datetime.now(tz=timezone.utc)
+    _now = now()
 
     # build input data
     user = user()
@@ -57,7 +58,7 @@ def test_basic(user, payment_failed_event_in):
 def test_wrong_reason(user, payment_failed_event_in):
     _ = "Провал оплаты, НО причина не та, и исходящего события нет"
 
-    _now = datetime.now(tz=timezone.utc)
+    _now = now()
 
     # build input data
     user = user()
@@ -78,7 +79,7 @@ def test_wrong_reason(user, payment_failed_event_in):
 def test_double_per_day(user, payment_failed_event_in):
     _ = "Провал оплаты с нужной причиной x2 в 1 день, но создается только 1 исходящее событие"
 
-    _now = datetime.now(tz=timezone.utc)
+    _now = now()
 
     # build input data
     user = user()
@@ -115,7 +116,7 @@ def test_double_per_day(user, payment_failed_event_in):
 def test_double_per_2_days(user, payment_failed_event_in):
     _ = "Провал оплаты с нужной причиной x2 за 2 дня, и создается 2 исходящих события"
 
-    _midnight = datetime.now(tz=timezone.utc).replace(hour=0, minute=0, second=1, microsecond=0)
+    _midnight = now().replace(hour=0, minute=0, second=1, microsecond=0)
 
     # build input data
     user = user()

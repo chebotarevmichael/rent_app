@@ -4,6 +4,7 @@ import pytest
 
 from src.models import EventOut, EventOutType, EventInType, EventOutState
 from src.scripts.cron import cron_generate_out_events
+from src.tools import now
 
 from tests.conftest import user, event_in
 
@@ -12,7 +13,7 @@ from tests.conftest import user, event_in
 def test_race_input_events_lte_24h(user, event_in, delay_between_events_sec):
     _ = "Гонка. События signup и bank_success в разных порядках и всегда 1 исходящее событие BANK_LINK_NUDGE_SMS"
 
-    _now = datetime.now(tz=timezone.utc)
+    _now = now()
 
     # build input data
     user = user()
@@ -46,11 +47,12 @@ def test_race_input_events_lte_24h(user, event_in, delay_between_events_sec):
     _expected = sorted([signup, bank_success])
     assert out_nudge.linked_in_events_ids == [e.event_id for e in _expected], 'Out event linked with both!'
 
+
 @pytest.mark.parametrize('delay_between_events_sec', [-24*3600-1, 24*3600+1])
 def test_race_input_events_gt_24h(user, event_in, delay_between_events_sec):
     _ = "Гонка. События signup и bank_success в разных порядках, но всегда слишком большая разница"
 
-    _now = datetime.now(tz=timezone.utc)
+    _now = now()
 
     # build input data
     user = user()
@@ -79,7 +81,7 @@ def test_race_input_events_gt_24h(user, event_in, delay_between_events_sec):
 def test_double_bank_success(user, event_in):
     _ = "2 bank_success события. 1 успешное и 1 подавленное"
 
-    _now = datetime.now(tz=timezone.utc)
+    _now = now()
 
     # build input data
     user = user()
@@ -119,7 +121,7 @@ def test_doubled_welcome(user, event_in):
         "События signup х2 и bank_success и х2 исходящих события BANK_LINK_NUDGE_SMS"
     )
 
-    _now = datetime.now(tz=timezone.utc)
+    _now = now()
 
     # build input data
     user = user()

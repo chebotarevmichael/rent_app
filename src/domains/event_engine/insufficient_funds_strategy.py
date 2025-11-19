@@ -4,7 +4,7 @@ from src.models import (
     EventIn, EventOut, User, EventInType, EventOutType, EventOutState, EventInFailureReason, EventOutChannel
 )
 from src.domains.event_engine import BaseStrategy
-
+from src.tools import now
 
 MESSAGE_TEMPLATE = 'Last payment (ts) was failed because of insufficient funds!'
 EXPLANATION_TEMPLATE_OK = 'Remind message was approved (in event ids: {in_event_ids})'
@@ -50,7 +50,7 @@ class InsufficientFundsStrategy(BaseStrategy):
         # ignore other
         
         insufficient_funds_out_events = set()
-        _now = kwargs.get('_now') or datetime.now(timezone.utc)
+        _now = kwargs.get('_now') or now()
         for out_event in out_events:
             # skip other
             if out_event.event_type != EventOutType.INSUFFICIENT_FUNDS_EMAIL:

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta
 
 from src.models import EventIn, User, EventOut
 from src.domains.event_engine import event_strategies
 
-from src.tools import group_list_by_key, group_set_by_key
+from src.tools import group_list_by_key, group_set_by_key, now
 
 
 # TODO: добавить автозапуск
@@ -29,7 +29,7 @@ def cron_generate_out_events(
 
     # parameter for test and executing in production
     if actual_users_ids is None:
-        event_timestamp = event_timestamp or (datetime.now(timezone.utc) - timedelta(minutes=30))
+        event_timestamp = event_timestamp or (now() - timedelta(minutes=30))
         last_30_min_events_in = EventIn.bulk_get_by_ts(ts=event_timestamp)
         actual_users_ids = list({event.user_id for event in last_30_min_events_in})
 

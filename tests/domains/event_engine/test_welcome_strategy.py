@@ -1,7 +1,8 @@
-from datetime import datetime, timezone, timedelta
+from datetime import timedelta
 
 from src.models import EventOut, EventOutType, EventInType, EventOutState
 from src.scripts.cron import cron_generate_out_events
+from src.tools import now
 
 from tests.conftest import user, event_in
 
@@ -9,7 +10,7 @@ from tests.conftest import user, event_in
 def test_basic(user, event_in):
     _ = "Базовый тест. 1 входящее и 1 исходящее"
 
-    _now = datetime.now(tz=timezone.utc)
+    _now = now()
 
     # build input data
     user = user()
@@ -33,7 +34,7 @@ def test_basic(user, event_in):
 def test_no_marketing_opt_in(user, event_in):
     _ = "Нет флага marketing_opt_in"
 
-    _now = datetime.now(tz=timezone.utc)
+    _now = now()
 
     # build input data
     user = user(marketing_opt_in=False)
@@ -51,7 +52,7 @@ def test_no_marketing_opt_in(user, event_in):
 def test_3_in_events(user, event_in):
     _ = "3 Одновременно. 3 входящих, 1 успешное и 2 подавленных"
 
-    _now = datetime.now(tz=timezone.utc)
+    _now = now()
 
     # build input data
     user = user()
@@ -88,7 +89,7 @@ def test_3_in_events(user, event_in):
 def test_event_from_past(user, event_in):
     _ = "Событие из прошлого."
 
-    _now = datetime.now(tz=timezone.utc)
+    _now = now()
 
     # build input data
     user = user()

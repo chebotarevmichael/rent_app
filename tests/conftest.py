@@ -2,9 +2,10 @@ import uuid
 
 import pytest
 
-from datetime import datetime, timezone
+from datetime import datetime
 
 from src.models import User, EventIn, EventInType
+from src.tools import now
 
 
 @pytest.fixture
@@ -52,7 +53,7 @@ def event_in(user):
         data = {
             'event_type': event_type,
             'user_id': user_id,
-            'event_timestamp': event_timestamp or datetime.now(tz=timezone.utc),
+            'event_timestamp': event_timestamp or now(),
             'properties': {},
         }
         data.update(overrides)

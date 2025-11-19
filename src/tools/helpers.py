@@ -29,3 +29,7 @@ def int_hash(*args) -> int:
 
 def gen_id() -> str:
     return str(ulid.new())   # 01HZXQ1M0P6J1Q4WG9T79E9G6N
+
+
+def now() -> datetime:
+    return datetime.now(timezone.utc)
