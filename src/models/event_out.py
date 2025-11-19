@@ -22,9 +22,11 @@ class EventOutType(str, Enum):
     HIGH_RISK_ALERT = 'HIGH_RISK_ALERT'
 
 
+# TODO: NOTE
+#  В реальной жизни статуса CREATED не было бы, в SQL-таблице на поле было бы "state IS NOT NULL",
+#  а у энтити поле state при создании был бы None.
+#  но т.к. в текущем коде схема БД опущена, сделал статус в явном виде.
 class EventOutState(str, Enum):
-    # TODO: в реальной жизни этого статуса бы не было, в таблице state IS NOT NULL, а у энтити state при создании был бы None.
-    #  но т.к. в текущем коде не схемы БД, сделал статус в явном виде, иначе было бы не понятно.
     CREATED = 'CREATED'         # only in memory, this state can not be in DB
 
     READY = 'READY'             # processing
@@ -40,8 +42,6 @@ class EventOutChannel(str, Enum):
     INTERNAL_ALERT = 'INTERNAL_ALERT'
 
 
-# TODO: вероятно упрощение, т.к. для 100500 видов событий одного класса явно было бы недостаточно,
-#  но для оговоренных "от 4 до 20шт" должно в пределе хватать (по крайней мере у нас не будет 4-20 полупустых классов)
 class EventOut(Base):
     event_id: str
 
@@ -52,7 +52,7 @@ class EventOut(Base):
 
     state: EventOutState
     channel: EventOutChannel
-    event_timestamp: datetime       # TODO: сделать просто ts
+    event_timestamp: datetime
     message: str
     explanation: str | None = None
 
@@ -93,23 +93,24 @@ class EventOut(Base):
 
     @classmethod
     def factory(cls, linked_in_events: list[EventIn], user: User, **kwargs) -> Self:
-        # TODO: потенциально кроме linked_IN_events могут добавиться linked_OUT_events
-        #  (например: "если уже посылали письмо, значит теперь посылаем смс")
+        # TODO: NOTE
+        #  Потенциально кроме linked_IN_events могут добавиться linked_OUT_events
+        #  (например: "если уже послали 2 письма и нет эффекта, значит в следующий раз посылаем смс")
         linked_in_events.sort(key=lambda e: e.event_timestamp)
 
         return cls(
             event_id=gen_id(),
             state=EventOutState.CREATED,
             user_id=user.user_id,
-            event_timestamp=kwargs.pop('event_timestamp', None) or datetime.now(timezone.utc),
+            event_timestamp=kwargs.pop('_now', None) or datetime.now(timezone.utc),
             linked_in_events_ids=[in_event.event_id for in_event in linked_in_events],
             **kwargs,
         )
 
     # === ORM methods ===
 
-    # TODO: it was copied from EventIn. I don't want to create to many class (even Mixins) because it will make code
-    #  less readable
+    # TODO: NOTE:
+    #  Осознанный копипаст с класса EventIn, чтобы не плодить Mixin'ы с единственным 2-строчным методом
 
     @classmethod
     def bulk_get_by_user_ids(cls, user_ids: list[str]) -> list[Self]:

@@ -9,13 +9,13 @@ event_strategies: list[type[BaseStrategy]] = []
 
 class BaseStrategy(ABC):
 
-    # TODO: по умолчанию включаем все стратегии в список, и осознано идем на допущение, что мы не управляем
+    # TODO: NOTE
+    #  По умолчанию включаем все стратегии в список, и осознано идем на допущение, что мы не управляем
     #  какая из стратегий вкл/выкл (по умолчанию все ВКЛ).
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
         event_strategies.append(cls)
 
-    # TODO: определиться с неймингом!!!
     @staticmethod
     @abstractmethod
     def extend_out_events(in_events: list[EventIn], out_events: set[EventOut], user: User, **kwargs):

@@ -17,7 +17,7 @@ router = build_router(__name__)
 
 class RequestUserTraits(BaseModel):
     email: EmailStr
-    country: str = 'ZZ'  # TODO: i already had deal with it: country can NULL (empty) or ZZ (unknown)
+    country: str = 'ZZ'  # country can NULL (empty) or ZZ (unknown)
     marketing_opt_in: bool
     risk_segment: UserRiskSegment
 
