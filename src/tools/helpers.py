@@ -29,8 +29,3 @@ def int_hash(*args) -> int:
 
 def gen_id() -> str:
     return str(ulid.new())   # 01HZXQ1M0P6J1Q4WG9T79E9G6N
-
-
-def is_same_utc_day(ts: datetime, _now: datetime = None) -> bool:
-    _now = _now or datetime.now(timezone.utc)
-    return ts.date() == _now.date()

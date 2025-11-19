@@ -1,8 +1,9 @@
+from datetime import datetime, timezone
+
 from src.models import (
     EventIn, EventOut, User, EventInType, EventOutType, EventOutState, EventInFailureReason, EventOutChannel
 )
 from src.domains.event_engine import BaseStrategy
-from src.tools import is_same_utc_day
 
 
 MESSAGE_TEMPLATE = 'Last payment (ts) was failed because of insufficient funds!'
@@ -48,12 +49,13 @@ class InsufficientFundsStrategy(BaseStrategy):
     def judge_out_events(in_events: list[EventIn], out_events: set[EventOut], **kwargs) -> None:
         # ignore other
         bank_link_out_events = set()
+        _now = kwargs.get('_now') or datetime.now(timezone.utc)
         for out_event in out_events:
             # skip other
             if out_event.event_type != EventOutType.INSUFFICIENT_FUNDS_EMAIL:
                 continue
             # skip other calendar days
-            if not is_same_utc_day(ts=out_event.event_timestamp, _now=kwargs.get('_now')):
+            if out_event.event_timestamp.date() != _now.date():
                 continue
             bank_link_out_events.add(out_event)
 

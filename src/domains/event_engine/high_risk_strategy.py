@@ -86,10 +86,7 @@ class HighRiskStrategy(BaseStrategy):
 
         # choose the FIRST created out event, if we don't have any ready/processing/done event
         if in_pipeline_event is None:
-            in_pipeline_event = min(
-                (e for e in high_risk_out_events if e.state == EventOutState.CREATED),  # FIRST event in CREATED state
-                default=None,
-            )
+            in_pipeline_event = min(e for e in high_risk_out_events if e.state == EventOutState.CREATED)  # FIRST event in CREATED state
             in_pipeline_event.state = EventOutState.READY
             in_pipeline_event.explanation = EXPLANATION_TEMPLATE_OK.format(
                 limit=HIGH_RISK_ALERT_LIMIT,
