@@ -41,12 +41,12 @@ class RequestEvent(BaseModel):
 @router.post('/create', summary='Ingest an event', tags=['events'])
 def create(request: RequestEvent = Body(...)):
     # TODO: тут бы ограничить, что нельзя принимать события "из будущего"
-    # создаем событие
+    # create events
     new_event = EventIn.factory(**request.model_dump())
     if EventIn.is_exist(db_id=new_event.event_id):
         raise DuplicatedEvent(event_id=new_event.event_id, user_id=new_event.user_id)
 
-    # пользователь
+    # user
     user = User.get(db_id=request.user_id)
     if not user:
         # TODO: не хочется давать возможность создавать пользователей по ивенту извне,
@@ -60,8 +60,8 @@ def create(request: RequestEvent = Body(...)):
         user.model_update(update=request.user_traits.model_dump())
 
     # TODO: работа с 2 таблицами только через тр-цию, но т.к. БД замокана - делаем без контекстного менеджера
-    new_event.save()    # сохраняем событие
-    user.save()         # обновляем/создаем пользователя
+    new_event.save()    # save the event
+    user.save()         # create/update the user
     # TODO: обновлять только если изменился пользователь
 
     return {

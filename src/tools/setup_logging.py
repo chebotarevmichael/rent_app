@@ -26,9 +26,9 @@ def setup_logging(log_path_str: str = "./logs/app.log", level: int = logging.DEB
         format=fmt,
         datefmt=datefmt,
         handlers=handlers,
-        force=True,          # перетираем предыдущую конфигурацию
+        force=True,          # force reloading of previous setting
     )
 
-    # на всякий пожарный
+    # just in case.
     root = logging.getLogger()
     root.propagate = True

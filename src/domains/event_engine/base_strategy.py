@@ -19,13 +19,11 @@ class BaseStrategy(ABC):
     @staticmethod
     @abstractmethod
     def extend_out_events(in_events: list[EventIn], out_events: set[EventOut], user: User, **kwargs):
-        # На основе всех входящих, исходящих и доп.данных (юзер) решить,
-        # какие события должны быть порождены на выходе
+        """Based on all incoming, outgoing and **kwargs to decide which events should be generated at the output."""
         raise NotImplementedError
 
     @staticmethod
     @abstractmethod
     def judge_out_events(in_events: list[EventIn], out_events: set[EventOut], **kwargs):
-        # На основе существующих исходящих событий, времени, настроек в отдельной стране и т.п. решить,
-        # какие события должны быть подавлены и проигнорированы.
+        """Based on all incoming, outgoing and **kwargs TO decide which events should be suppressed and ignored."""
         raise NotImplementedError
