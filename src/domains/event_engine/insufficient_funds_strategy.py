@@ -48,7 +48,8 @@ class InsufficientFundsStrategy(BaseStrategy):
     @staticmethod
     def judge_out_events(in_events: list[EventIn], out_events: set[EventOut], **kwargs) -> None:
         # ignore other
-        bank_link_out_events = set()
+        
+        insufficient_funds_out_events = set()
         _now = kwargs.get('_now') or datetime.now(timezone.utc)
         for out_event in out_events:
             # skip other
@@ -57,23 +58,23 @@ class InsufficientFundsStrategy(BaseStrategy):
             # skip other calendar days
             if out_event.event_timestamp.date() != _now.date():
                 continue
-            bank_link_out_events.add(out_event)
+            insufficient_funds_out_events.add(out_event)
 
-        if not bank_link_out_events:
+        if not insufficient_funds_out_events:
             return
 
         # get an actual existing out event
-        in_pipeline_event = max((e for e in bank_link_out_events if e.is_in_pipeline), default=None)
+        in_pipeline_event = max((e for e in insufficient_funds_out_events if e.is_in_pipeline), default=None)
 
         # choose something, if we don't have any ready/processing/done event on this calendar day
         if in_pipeline_event is None:
-            in_pipeline_event = min(bank_link_out_events)   # the earliest event in CREATED state
+            in_pipeline_event = min(insufficient_funds_out_events)   # the earliest event in CREATED state
             in_pipeline_event.state = EventOutState.READY
             in_pipeline_event.explanation = EXPLANATION_TEMPLATE_OK.format(in_event_ids=in_pipeline_event.linked_in_events_ids)
 
         # suppress other
-        bank_link_out_events.discard(in_pipeline_event)
-        for event in bank_link_out_events:
+        insufficient_funds_out_events.discard(in_pipeline_event)
+        for event in insufficient_funds_out_events:
             event.state = EventOutState.SUPPRESSED
             event.explanation = EXPLANATION_TEMPLATE_SUPPRESSED.format(out_event_id=in_pipeline_event.event_id)
 
