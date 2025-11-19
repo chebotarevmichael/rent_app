@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 
-from src.models import EventIn, User, EventOut
+from src.models import EventIn, User, EventOut, EventOutState
 from src.domains.event_engine import event_strategies
 
 from src.tools import group_list_by_key, group_set_by_key, now
+from src.workers.senders import send_event_out
 
 
 # TODO: добавить автозапуск
@@ -51,7 +52,7 @@ def cron_generate_out_events(
         user_out_events: set[EventOut] = user_id2out_events.get(user.user_id, set())
 
         # create new out events for user
-        created_out_events = set()
+        created_out_events: set[EventOut] = set()
         for strategy in event_strategies:
             created_out_events |= strategy.extend_out_events(
                 in_events=user_in_events,
@@ -67,4 +68,10 @@ def cron_generate_out_events(
         # write new out events for current user to DB
         EventOut.bulk_save(entities=created_out_events)
 
-        # TODO: тут нужно поставить джобу в очередь при этом в одном тра-ции с созданием ивента в БД
+        for event in created_out_events:
+            if event.state == EventOutState.READY:
+                # todo NOTE: вместо того чтобы отправлять в воркер, исполняем сразу
+                #  (чтобы проверяющему не надо было локально поднимать redis)
+                #send_event_out.send(event.event_id)
+                event.execute()
+

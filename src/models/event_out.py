@@ -83,8 +83,6 @@ class EventOut(Base):
         return self.event_timestamp < other.event_timestamp
 
 
-    # TODO: какое действие должно быть? послать в канал или еще что
-    #  только скорее должно быть перенесено в апку
     def execute(self):
         logger.info(
             '%s. %s. user_id=%s, channel=%s, event_type=%s, linked_in_events_ids=%s, explanation=%s',
@@ -92,9 +90,12 @@ class EventOut(Base):
             self.message,
             self.user_id,
             self.channel,
+            self.event_type,
+            self.linked_in_events_ids,
             self.explanation,
         )
         self.state = EventOutState.DONE
+        self.save() # mark this event as completed
 
 
     @classmethod
@@ -115,7 +116,7 @@ class EventOut(Base):
 
     # === ORM methods ===
 
-    # todo NOTE::
+    # todo NOTE:
     #  Осознанный копипаст с класса EventIn, чтобы не плодить Mixin'ы с единственным 2-строчным методом
 
     @classmethod

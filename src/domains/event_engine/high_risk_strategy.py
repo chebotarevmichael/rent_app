@@ -41,7 +41,7 @@ class HighRiskStrategy(BaseStrategy):
         for in_event in sorted(payment_failed_in_events):
             payment_failed_in_row.append(in_event)
 
-            # TODO: можно переделать под attempt_number, тогда не придется опираться на "сколько событий дошло"
+            # todo можно переделать под attempt_number, тогда не придется опираться на "сколько событий дошло"
 
             if len(payment_failed_in_row) >= HIGH_RISK_ALERT_LIMIT:
                 tmp_out_event = EventOut.factory(

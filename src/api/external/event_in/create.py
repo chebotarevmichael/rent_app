@@ -10,6 +10,7 @@ from src.api.utils import build_router
 from src.models import EventIn, User, EventInType, UserRiskSegment
 
 from src.api.exceptions import DuplicatedEvent
+from src.scripts.cron import cron_generate_out_events
 
 router = build_router(__name__)
 
@@ -64,6 +65,14 @@ def create(request: RequestEvent = Body(...)):
     if user.is_changed:
         user.save()     # create/update the user (only if it's really changed)
     new_event.save()    # save the event
+
+    # todo NOTE:
+    #  ЭТО УМЫШЛЕННЫЙ ХАК!!!
+    #  Чтобы вы не ждали 1 минуту между самим запросом и тем как буду созданы исходящие события,
+    #  которые в том числе станут видны в audit-ручку.
+    #  .
+    #  Считайте, что этого вызова тут нет, а автор уже жалеет о том, что сделал этот хак))
+    cron_generate_out_events(actual_users_ids=[user.user_id])
 
     return {
         'status': 'accepted',
