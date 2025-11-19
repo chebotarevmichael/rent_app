@@ -22,7 +22,7 @@ class EventOutType(str, Enum):
     HIGH_RISK_ALERT = 'HIGH_RISK_ALERT'
 
 
-# TODO: NOTE
+# todo NOTE:
 #  В реальной жизни статуса CREATED не было бы, в SQL-таблице на поле было бы "state IS NOT NULL",
 #  а у энтити поле state при создании был бы None.
 #  но т.к. в текущем коде схема БД опущена, сделал статус в явном виде.
@@ -93,7 +93,7 @@ class EventOut(Base):
 
     @classmethod
     def factory(cls, linked_in_events: list[EventIn], user: User, **kwargs) -> Self:
-        # TODO: NOTE
+        # todo NOTE:
         #  Потенциально кроме linked_IN_events могут добавиться linked_OUT_events
         #  (например: "если уже послали 2 письма и нет эффекта, значит в следующий раз посылаем смс")
         linked_in_events.sort(key=lambda e: e.event_timestamp)
@@ -109,7 +109,7 @@ class EventOut(Base):
 
     # === ORM methods ===
 
-    # TODO: NOTE:
+    # todo NOTE::
     #  Осознанный копипаст с класса EventIn, чтобы не плодить Mixin'ы с единственным 2-строчным методом
 
     @classmethod

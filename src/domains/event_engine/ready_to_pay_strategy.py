@@ -15,7 +15,7 @@ class ReadyToPayStrategy(BaseStrategy):
         # If link_bank_success within 24h of signup_completed, send “BANK_LINK_NUDGE_SMS”
         created_out_events: set[EventOut] = set()
 
-        # TODO: NOTE
+        # todo NOTE:
         #  Вообще по идее, мы должны здесь выбрать ВСЕ signup_completed-события и ВСЕ link_bank_success-события,
         #  и построить декартово произведение, чтобы увидеть все-все потенциальные исходящие bank_link_nudge_sms-события.
         #  .

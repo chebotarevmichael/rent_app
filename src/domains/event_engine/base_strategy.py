@@ -9,7 +9,7 @@ event_strategies: list[type[BaseStrategy]] = []
 
 class BaseStrategy(ABC):
 
-    # TODO: NOTE
+    # todo NOTE:
     #  По умолчанию включаем все стратегии в список, и осознано идем на допущение, что мы не управляем
     #  какая из стратегий вкл/выкл (по умолчанию все ВКЛ).
     def __init_subclass__(cls, **kwargs):
