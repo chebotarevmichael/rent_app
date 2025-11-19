@@ -68,6 +68,9 @@ def cron_generate_out_events(
         # write new out events for current user to DB
         EventOut.bulk_save(entities=created_out_events)
 
+        # todo: правильнее эту штуку вынести в отдельный крон, который будет вычитывать READY, ставить их в очередь,
+        #  а в БД ставим им статус PROCESSING. В текущем формате если после сохранения произойдет сбой - задачи так
+        #  и встанут на исполнение.
         for event in created_out_events:
             if event.state == EventOutState.READY:
                 # todo NOTE: вместо того чтобы отправлять в воркер, исполняем сразу
