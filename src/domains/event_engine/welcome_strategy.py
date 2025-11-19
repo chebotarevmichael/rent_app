@@ -2,6 +2,7 @@ from src.models import EventIn, EventOut, User, EventInType, EventOutType, Event
 from src.domains.event_engine import BaseStrategy
 
 
+MESSAGE_TEMPLATE = 'Welcome to Derry!'
 EXPLANATION_TEMPLATE_OK = 'Welcome message was approved (in event ids: {in_event_ids})'
 EXPLANATION_TEMPLATE_SUPPRESSED = 'Welcome message already exists (exist out event_id: {out_event_id})'
 
@@ -19,11 +20,12 @@ class WelcomeStrategy(BaseStrategy):
         for in_event in in_events:
             if in_event.event_type == EventInType.SIGNUP_COMPLETED:
                 tmp_out_event = EventOut.factory(
+                    message=MESSAGE_TEMPLATE,
                     linked_in_events=[in_event],
                     user=user,
                     event_type=EventOutType.WELCOME_EMAIL,
                     channel=EventOutChannel.EMAIL,
-                    event_timestamp=kwargs.get('_now'),
+                    event_timestamp=kwargs.get('_now'), # TODO: переименовать event_timestamp=>_now
                 )
                 # add only brand-new events
                 if tmp_out_event not in out_events:

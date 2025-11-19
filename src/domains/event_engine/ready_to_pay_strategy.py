@@ -2,6 +2,7 @@ from src.models import EventIn, EventOut, User, EventInType, EventOutType, Event
 from src.domains.event_engine import BaseStrategy
 
 
+MESSAGE_TEMPLATE = 'You`re almost ready to pay your rent ❤️'
 EXPLANATION_TEMPLATE_OK = 'Nudge SMS was approved (in event ids: {in_event_ids})'
 EXPLANATION_TEMPLATE_SUPPRESSED = 'Nudge SMS already exists (exist out event_id: {out_event_id})'
 DELAY_BETWEEN_SIGNUP_COMPLETED_AND_LINK_BANK_SUCCESS_SEC = 24 * 60 * 60
@@ -39,6 +40,7 @@ class ReadyToPayStrategy(BaseStrategy):
                 continue
 
             tmp_out_event = EventOut.factory(
+                message=MESSAGE_TEMPLATE,
                 linked_in_events=[last_signup_completed_in_event, in_event], # signup_completed + link_bank_success
                 user=user,
                 event_type=EventOutType.BANK_LINK_NUDGE_SMS,

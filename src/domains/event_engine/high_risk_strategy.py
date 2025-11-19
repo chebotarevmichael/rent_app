@@ -4,6 +4,7 @@ from src.models import EventIn, EventOut, User, EventInType, EventOutType, Event
 from src.domains.event_engine import BaseStrategy
 
 
+MESSAGE_TEMPLATE = 'User (user_id={user_id}) has >= {limit} failed payments. Previous successful payment: {ts}'
 EXPLANATION_TEMPLATE_OK = 'High risk! {limit} payment attempts failed (in event ids: {in_event_ids})'
 EXPLANATION_TEMPLATE_SUPPRESSED = 'Alert message already exists (exist out event_id: {out_event_id})'
 HIGH_RISK_ALERT_LIMIT = 3
@@ -44,6 +45,7 @@ class HighRiskStrategy(BaseStrategy):
 
             if len(payment_failed_in_row) >= HIGH_RISK_ALERT_LIMIT:
                 tmp_out_event = EventOut.factory(
+                    message=HighRiskStrategy.build_message(user=user, last_initiated_ts=last_initiated_ts),
                     linked_in_events=payment_failed_in_row,
                     user=user,
                     event_type=EventOutType.HIGH_RISK_ALERT,
@@ -104,3 +106,11 @@ class HighRiskStrategy(BaseStrategy):
         for event in high_risk_out_events:
             event.state = EventOutState.SUPPRESSED
             event.explanation = EXPLANATION_TEMPLATE_SUPPRESSED.format(out_event_id=in_pipeline_event.event_id)
+
+    @staticmethod
+    def build_message(user: User, last_initiated_ts: datetime) -> str:
+        return MESSAGE_TEMPLATE.format(
+            user_id=user.user_id,
+            limit=HIGH_RISK_ALERT_LIMIT,
+            ts=last_initiated_ts,
+        )

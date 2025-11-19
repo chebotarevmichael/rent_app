@@ -53,6 +53,7 @@ class EventOut(Base):
     state: EventOutState
     channel: EventOutChannel
     event_timestamp: datetime       # TODO: сделать просто ts
+    message: str
     explanation: str | None = None
 
     @property
@@ -80,16 +81,13 @@ class EventOut(Base):
     #  только скорее должно быть перенесено в апку
     def execute(self):
         logger.info(
-            'user_id=%s',
+            '%s. %s. user_id=%s, channel=%s, event_type=%s, linked_in_events_ids=%s, explanation=%s',
+            self.event_timestamp,
+            self.message,
             self.user_id,
+            self.channel,
+            self.explanation,
         )
-        #     template_name (WELCOME_EMAIL, etc.)
-        #
-        #     channel ("email" or "sms" or "internal_alert")
-        #
-        #     timestamp
-        #
-        #     why we decided to send (short reason string)
         self.state = EventOutState.DONE
 
 

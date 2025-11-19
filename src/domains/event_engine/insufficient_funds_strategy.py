@@ -4,6 +4,8 @@ from src.models import (
 from src.domains.event_engine import BaseStrategy
 from src.tools import is_same_utc_day
 
+
+MESSAGE_TEMPLATE = 'Last payment (ts) was failed because of insufficient funds!'
 EXPLANATION_TEMPLATE_OK = 'Remind message was approved (in event ids: {in_event_ids})'
 EXPLANATION_TEMPLATE_SUPPRESSED = 'Remind message already happened today (exist out event_id: {out_event_id})'
 DELAY_BETWEEN_SIGNUP_COMPLETED_AND_LINK_BANK_SUCCESS_SEC = 24 * 60 * 60
@@ -26,6 +28,7 @@ class InsufficientFundsStrategy(BaseStrategy):
                 continue
 
             tmp_out_event = EventOut.factory(
+                message=InsufficientFundsStrategy.build_message(in_event),
                 linked_in_events=[in_event],  # payment failed
                 user=user,
                 event_type=EventOutType.INSUFFICIENT_FUNDS_EMAIL,
@@ -78,3 +81,7 @@ class InsufficientFundsStrategy(BaseStrategy):
         for event in bank_link_out_events:
             event.state = EventOutState.SUPPRESSED
             event.explanation = EXPLANATION_TEMPLATE_SUPPRESSED.format(out_event_id=in_pipeline_event.event_id)
+
+    @staticmethod
+    def build_message(in_event: EventIn) -> str:
+        return MESSAGE_TEMPLATE.format(ts=in_event.event_timestamp.isoformat())

@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum
 
 from pydantic import EmailStr
@@ -18,10 +19,8 @@ class User(Base):
     marketing_opt_in: bool
     risk_segment: UserRiskSegment
 
-    # TODO: add email validator
     # TODO: add country validator
 
     @property
     def db_id(self):
         return self.user_id
-
