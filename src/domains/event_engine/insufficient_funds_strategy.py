@@ -33,7 +33,7 @@ class InsufficientFundsStrategy(BaseStrategy):
                 user=user,
                 event_type=EventOutType.INSUFFICIENT_FUNDS_EMAIL,
                 channel=EventOutChannel.EMAIL,
-                event_timestamp=kwargs.get('_now'),
+                _now=kwargs.get('_now'),
             )
             # add only brand-new events
             if tmp_out_event not in out_events:

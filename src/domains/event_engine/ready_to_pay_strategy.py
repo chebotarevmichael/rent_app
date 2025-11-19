@@ -15,10 +15,11 @@ class ReadyToPayStrategy(BaseStrategy):
         # If link_bank_success within 24h of signup_completed, send “BANK_LINK_NUDGE_SMS”
         created_out_events: set[EventOut] = set()
 
-        # TODO: вообще по идее, мы должны здесь выбрать ВСЕ signup_completed-события и ВСЕ link_bank_success-события,
+        # TODO: NOTE
+        #  Вообще по идее, мы должны здесь выбрать ВСЕ signup_completed-события и ВСЕ link_bank_success-события,
         #  и построить декартово произведение, чтобы увидеть все-все потенциальные исходящие bank_link_nudge_sms-события.
         #  .
-        #  Взял на себя смелость ограничиться последним signup_completed-событием, чтобы не плодить лишние out-события.
+        #  Но думаю практичнее ограничиться последним signup_completed-событием, чтобы не плодить лишние out-события.
         last_signup_completed_in_event = max(
             (e for e in in_events if e.event_type == EventInType.SIGNUP_COMPLETED),
             key=lambda e: e.event_timestamp,
@@ -45,7 +46,7 @@ class ReadyToPayStrategy(BaseStrategy):
                 user=user,
                 event_type=EventOutType.BANK_LINK_NUDGE_SMS,
                 channel=EventOutChannel.SMS,
-                event_timestamp=kwargs.get('_now'),
+                _now=kwargs.get('_now'),
             )
             # add only brand-new events
             if tmp_out_event not in out_events:

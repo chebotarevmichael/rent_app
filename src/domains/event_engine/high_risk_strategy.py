@@ -50,7 +50,7 @@ class HighRiskStrategy(BaseStrategy):
                     user=user,
                     event_type=EventOutType.HIGH_RISK_ALERT,
                     channel=EventOutChannel.INTERNAL_ALERT,
-                    event_timestamp=kwargs.get('_now'),
+                    _now=kwargs.get('_now'),
                 )
                 # add only brand-new events
                 if tmp_out_event not in out_events:

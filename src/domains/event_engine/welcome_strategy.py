@@ -25,7 +25,7 @@ class WelcomeStrategy(BaseStrategy):
                     user=user,
                     event_type=EventOutType.WELCOME_EMAIL,
                     channel=EventOutChannel.EMAIL,
-                    event_timestamp=kwargs.get('_now'), # TODO: переименовать event_timestamp=>_now
+                    _now=kwargs.get('_now'),
                 )
                 # add only brand-new events
                 if tmp_out_event not in out_events:
