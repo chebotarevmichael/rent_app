@@ -4,16 +4,7 @@ import pytest
 
 from datetime import datetime, timezone
 
-from src.models import User, EventIn, Base, EventInType, EventOutType, EventOutType
-
-
-# TODO: надо ли оно мне вообще?
-@pytest.fixture(autouse=True)
-def clean_db():
-    """Очищает in-memory DB перед каждым тестом."""
-    Base._db.clear()
-    yield
-    Base._db.clear()
+from src.models import User, EventIn, EventInType
 
 
 @pytest.fixture
@@ -35,7 +26,7 @@ def user():
 
         data.update(overrides)
 
-        u = User(**data)
+        u = User.factory(**data)
         u.save()
         return u
 

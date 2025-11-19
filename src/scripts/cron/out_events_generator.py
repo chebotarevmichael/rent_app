@@ -66,5 +66,4 @@ def cron_generate_out_events(
         # write new out events for current user to DB
         EventOut.bulk_save(entities=created_out_events)
 
-
-
+        # TODO: тут нужно поставить джобу в очередь при этом в одном тра-ции с созданием ивента в БД
