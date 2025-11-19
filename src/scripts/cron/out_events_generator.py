@@ -9,7 +9,6 @@ from src.tools import group_list_by_key, group_set_by_key, now
 from src.workers.senders import send_event_out
 
 
-# TODO: добавить автозапуск
 def cron_generate_out_events(
         # for manual execution in production
         event_timestamp: datetime = None,
@@ -68,12 +67,14 @@ def cron_generate_out_events(
         # write new out events for current user to DB
         EventOut.bulk_save(entities=created_out_events)
 
-        # todo: правильнее эту штуку вынести в отдельный крон, который будет вычитывать READY, ставить их в очередь,
+        # todo NOTE:
+        #  Правильнее эту штуку вынести в отдельный крон, который будет вычитывать READY, ставить их в очередь,
         #  а в БД ставим им статус PROCESSING. В текущем формате если после сохранения произойдет сбой - задачи так
         #  и встанут на исполнение.
         for event in created_out_events:
             if event.state == EventOutState.READY:
-                # todo NOTE: вместо того чтобы отправлять в воркер, исполняем сразу
+                # todo NOTE:
+                #  Вместо того чтобы отправлять в воркер, исполняем сразу
                 #  (чтобы проверяющему не надо было локально поднимать redis)
                 #send_event_out.send(event.event_id)
                 event.execute()
