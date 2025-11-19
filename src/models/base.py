@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import ClassVar, TypeVar, Any
-from pydantic import BaseModel
-
+from typing import ClassVar, TypeVar, Any, Self
+from pydantic import BaseModel, PrivateAttr
 
 T = TypeVar('T', bound='Base')
 
@@ -11,6 +10,9 @@ T = TypeVar('T', bound='Base')
 class Base(ABC, BaseModel):
     # it's DB mock
     _db: ClassVar[dict[type, dict[Any, Base]]] = {}
+
+    # track changed fields
+    _changed_fields: set[str] = PrivateAttr(default_factory=set)
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -25,6 +27,25 @@ class Base(ABC, BaseModel):
     @classmethod
     def factory(cls, **kwargs) -> T:
         return cls(**kwargs)
+
+    def update(self, data: dict) -> Self:
+        update = self.model_dump()
+        update.update(data)
+        for k, v in self.model_validate(update).model_dump(exclude_defaults=True).items():
+            old_value = getattr(self, k, None)
+            if old_value != v:
+                self._changed_fields.add(k)
+            setattr(self, k, v)
+        return self
+
+    # ==== tracking of changes ====
+
+    def is_changed(self) -> bool:
+        return bool(self._changed_fields)
+
+    def model_post_init(self, __context) -> None:  # pydantic v2 hook
+        super().model_post_init(__context)
+        self._changed_fields.clear()
 
     # ==== ORM mock ====
 

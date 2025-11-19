@@ -11,7 +11,6 @@ from src.models import EventIn, User, EventInType, UserRiskSegment
 
 from src.api.exceptions import DuplicatedEvent
 
-
 router = build_router(__name__)
 
 
@@ -40,29 +39,31 @@ class RequestEvent(BaseModel):
 
 @router.post('/create', summary='Ingest an event', tags=['events'])
 def create(request: RequestEvent = Body(...)):
-    # TODO: тут бы ограничить, что нельзя принимать события "из будущего"
     # create events
     new_event = EventIn.factory(**request.model_dump())
+
     if EventIn.is_exist(db_id=new_event.event_id):
         raise DuplicatedEvent(event_id=new_event.event_id, user_id=new_event.user_id)
 
     # user
     user = User.get(db_id=request.user_id)
     if not user:
-        # TODO: не хочется давать возможность создавать пользователей по ивенту извне,
+        # todo NOTE:
+        #  Не хочется давать возможность создавать пользователей по ивенту извне,
         #  по идее мы уже должны знать о нашем юзере перед тем как принимать ивенты по пользователю.
         #  .
-        #  Но если так сделать, то в текущей системе пользователям неоткуда будет взяться,
+        #  Но если так сделать, то в текущей системе пользователям совсем неоткуда будет взяться,
         #  поэтому разрешаем создавать пользователей на основе любого входящего ивента((
         # raise UnknownEventUser(user_id=request.user_id)
         user = User.factory(user_id=request.user_id, **request.user_traits.model_dump())
     else:
-        user.model_update(update=request.user_traits.model_dump())
+        user.update(request.user_traits.model_dump())
 
-    # TODO: работа с 2 таблицами только через тр-цию, но т.к. БД замокана - делаем без контекстного менеджера
+    # todo NOTE:
+    #  Работа с 2 таблицами только через тр-цию, но т.к. БД замокана - делаем без контекстного менеджера
+    if user.is_changed:
+        user.save()     # create/update the user (only if it's really changed)
     new_event.save()    # save the event
-    user.save()         # create/update the user
-    # TODO: обновлять только если изменился пользователь
 
     return {
         'status': 'accepted',

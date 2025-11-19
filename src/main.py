@@ -1,7 +1,7 @@
-from tools import setup_logging
 from fastapi import FastAPI
 from src.api.admin.user.audit import router as admin_user_audit_router
 from src.api.external.event_in.create import router as external_event_in_create_router
+from src.tools import setup_logging
 
 setup_logging()
 app = FastAPI()
