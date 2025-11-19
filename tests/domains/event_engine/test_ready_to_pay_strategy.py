@@ -1,4 +1,4 @@
-from datetime import datetime, timezone, timedelta
+from datetime import timedelta
 
 import pytest
 
@@ -11,7 +11,7 @@ from tests.conftest import user, event_in
 
 @pytest.mark.parametrize('delay_between_events_sec', [-3600, 0, 24*3600])
 def test_race_input_events_lte_24h(user, event_in, delay_between_events_sec):
-    _ = "Гонка. События signup и bank_success в разных порядках и всегда 1 исходящее событие BANK_LINK_NUDGE_SMS"
+    _ = 'Гонка. События signup и bank_success в разных порядках и всегда 1 исходящее событие BANK_LINK_NUDGE_SMS'
 
     _now = now()
 
@@ -50,7 +50,7 @@ def test_race_input_events_lte_24h(user, event_in, delay_between_events_sec):
 
 @pytest.mark.parametrize('delay_between_events_sec', [-24*3600-1, 24*3600+1])
 def test_race_input_events_gt_24h(user, event_in, delay_between_events_sec):
-    _ = "Гонка. События signup и bank_success в разных порядках, но всегда слишком большая разница"
+    _ = 'Гонка. События signup и bank_success в разных порядках, но всегда слишком большая разница'
 
     _now = now()
 
@@ -79,7 +79,7 @@ def test_race_input_events_gt_24h(user, event_in, delay_between_events_sec):
 
 
 def test_double_bank_success(user, event_in):
-    _ = "2 bank_success события. 1 успешное и 1 подавленное"
+    _ = '2 bank_success события. 1 успешное и 1 подавленное'
 
     _now = now()
 
@@ -117,8 +117,8 @@ def test_double_bank_success(user, event_in):
 
 def test_doubled_welcome(user, event_in):
     _ = (
-        "Повторное событие welcome не порождает пуш. "
-        "События signup х2 и bank_success и х2 исходящих события BANK_LINK_NUDGE_SMS"
+        'Повторное событие welcome не порождает пуш. '
+        'События signup х2 и bank_success и х2 исходящих события BANK_LINK_NUDGE_SMS'
     )
 
     _now = now()

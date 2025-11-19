@@ -34,7 +34,7 @@ class EventIn(Base):
     def db_id(self) -> str:
         return self.event_id
 
-    @field_validator("event_timestamp", mode="before")
+    @field_validator('event_timestamp', mode='before')
     def ensure_utc(cls, v: datetime) -> datetime:
         if isinstance(v, datetime):
             if v.tzinfo is None:

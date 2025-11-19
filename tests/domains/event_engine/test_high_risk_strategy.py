@@ -1,4 +1,4 @@
-from datetime import datetime, timezone, timedelta
+from datetime import timedelta
 
 from src.models import EventOut, EventOutType, EventInType, EventOutState
 from src.scripts.cron import cron_generate_out_events
@@ -8,7 +8,7 @@ from tests.conftest import user, event_in
 
 
 def test_basic(user, event_in):
-    _ = "Базовый тест. 2 провала оплаты - ничего, на 3ий - событие high risk"
+    _ = 'Базовый тест. 2 провала оплаты - ничего, на 3ий - событие high risk'
 
     _now = now()
 
@@ -46,7 +46,7 @@ def test_basic(user, event_in):
 
 
 def test_saving_by_payment_inited(user, event_in):
-    _ = "2 провала оплаты, 1 успешная; через 1 месяц еще 2 провала оплаты, но события high risk нету"
+    _ = '2 провала оплаты, 1 успешная; через 1 месяц еще 2 провала оплаты, но события high risk нету'
 
     _now = now()
 
@@ -76,7 +76,7 @@ def test_saving_by_payment_inited(user, event_in):
 
 
 def test_old_payment_inited_not_saved(user, event_in):
-    _ = "1 успешная месяц назад; 3 провала оплаты сейчас, поэтому событие high risk есть"
+    _ = '1 успешная месяц назад; 3 провала оплаты сейчас, поэтому событие high risk есть'
 
     _now = now()
 
@@ -107,7 +107,7 @@ def test_old_payment_inited_not_saved(user, event_in):
 
 
 def test_payment_failed_x4(user, event_in):
-    _ = "4 провала оплаты, есть 2 события high risk"
+    _ = '4 провала оплаты, есть 2 события high risk'
 
     _now = now()
 
@@ -148,7 +148,7 @@ def test_payment_failed_x4(user, event_in):
 
 
 def test_payment_failed_twice_but_not_suppressed(user, event_in):
-    _ = "3 провала оплаты, 1 событие high risk, потом была оплата и снова 3 провала оплаты - должен быть high risk #2"
+    _ = '3 провала оплаты, 1 событие high risk, потом была оплата и снова 3 провала оплаты - должен быть high risk #2'
 
     #
     # === User failed 3 payments, but finally he paid ==

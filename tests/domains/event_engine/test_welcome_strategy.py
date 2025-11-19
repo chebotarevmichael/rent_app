@@ -8,7 +8,7 @@ from tests.conftest import user, event_in
 
 
 def test_basic(user, event_in):
-    _ = "Базовый тест. 1 входящее и 1 исходящее"
+    _ = 'Базовый тест. 1 входящее и 1 исходящее'
 
     _now = now()
 
@@ -32,7 +32,7 @@ def test_basic(user, event_in):
 
 
 def test_no_marketing_opt_in(user, event_in):
-    _ = "Нет флага marketing_opt_in"
+    _ = 'Нет флага marketing_opt_in'
 
     _now = now()
 
@@ -50,7 +50,7 @@ def test_no_marketing_opt_in(user, event_in):
 
 
 def test_3_in_events(user, event_in):
-    _ = "3 Одновременно. 3 входящих, 1 успешное и 2 подавленных"
+    _ = '3 Одновременно. 3 входящих, 1 успешное и 2 подавленных'
 
     _now = now()
 
@@ -87,7 +87,7 @@ def test_3_in_events(user, event_in):
 
 
 def test_event_from_past(user, event_in):
-    _ = "Событие из прошлого."
+    _ = 'Событие из прошлого.'
 
     _now = now()
 

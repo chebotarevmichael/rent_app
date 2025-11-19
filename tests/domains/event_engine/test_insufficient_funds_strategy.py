@@ -1,4 +1,4 @@
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta
 
 import pytest
 
@@ -33,7 +33,7 @@ def payment_failed_event_in(event_in, user):
 
 
 def test_basic(user, payment_failed_event_in):
-    _ = "Базовый тест. Провал оплаты с нужной причиной и создается исходящее событие"
+    _ = 'Базовый тест. Провал оплаты с нужной причиной и создается исходящее событие'
 
     _now = now()
 
@@ -56,7 +56,7 @@ def test_basic(user, payment_failed_event_in):
 
 
 def test_wrong_reason(user, payment_failed_event_in):
-    _ = "Провал оплаты, НО причина не та, и исходящего события нет"
+    _ = 'Провал оплаты, НО причина не та, и исходящего события нет'
 
     _now = now()
 
@@ -77,7 +77,7 @@ def test_wrong_reason(user, payment_failed_event_in):
 
 
 def test_double_per_day(user, payment_failed_event_in):
-    _ = "Провал оплаты с нужной причиной x2 в 1 день, но создается только 1 исходящее событие"
+    _ = 'Провал оплаты с нужной причиной x2 в 1 день, но создается только 1 исходящее событие'
 
     _now = now()
 
@@ -114,7 +114,7 @@ def test_double_per_day(user, payment_failed_event_in):
 
 
 def test_double_per_2_days(user, payment_failed_event_in):
-    _ = "Провал оплаты с нужной причиной x2 за 2 дня, и создается 2 исходящих события"
+    _ = 'Провал оплаты с нужной причиной x2 за 2 дня, и создается 2 исходящих события'
 
     _midnight = now().replace(hour=0, minute=0, second=1, microsecond=0)
 
