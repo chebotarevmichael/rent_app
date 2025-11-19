@@ -37,13 +37,13 @@ def test_race_input_events_lte_24h(user, event_in, delay_between_events_sec):
     # out_welcome
     assert out_welcome.event_type == EventOutType.WELCOME_EMAIL, '#1 event type is not WELCOME_EMAIL'
     assert out_welcome.user_id == user.user_id, '#1 user_id'
-    assert out_welcome.state == EventOutState.READY, '#1 state is not READY'
+    assert out_welcome.state == EventOutState.DONE, '#1 state is not DONE'
     assert out_welcome.linked_in_events_ids == [signup.event_id], '#1 linked_in_events_ids'
 
     # out_nudge
     assert out_nudge.event_type == EventOutType.BANK_LINK_NUDGE_SMS, '#2 event type is not BANK_LINK_NUDGE_SMS'
     assert out_nudge.user_id == user.user_id, '#2 user_id'
-    assert out_nudge.state == EventOutState.READY, '#2 state is not READY'
+    assert out_nudge.state == EventOutState.DONE, '#2 state is not DONE'
     _expected = sorted([signup, bank_success])
     assert out_nudge.linked_in_events_ids == [e.event_id for e in _expected], 'Out event linked with both!'
 
@@ -74,7 +74,7 @@ def test_race_input_events_gt_24h(user, event_in, delay_between_events_sec):
 
     # out_welcome
     assert out_welcome.event_type == EventOutType.WELCOME_EMAIL, '#1 event type is not WELCOME_EMAIL'
-    assert out_welcome.state == EventOutState.READY, '#1 state is not READY'
+    assert out_welcome.state == EventOutState.DONE, '#1 state is not DONE'
     assert out_welcome.linked_in_events_ids == [signup.event_id], '#1 linked_in_events_ids'
 
 
@@ -102,10 +102,10 @@ def test_double_bank_success(user, event_in):
     # out_welcome
     assert out_welcome.event_type == EventOutType.WELCOME_EMAIL, 'event type is not WELCOME_EMAIL'
 
-    # out_nudge #1 (READY)
+    # out_nudge #1 (DONE)
     assert out_nudge_1.event_type == EventOutType.BANK_LINK_NUDGE_SMS, '#1 event type is not BANK_LINK_NUDGE_SMS'
     assert out_nudge_1.user_id == user.user_id, '#1 user_id'
-    assert out_nudge_1.state == EventOutState.READY, '#1 state is not READY'
+    assert out_nudge_1.state == EventOutState.DONE, '#1 state is not DONE'
     assert out_nudge_1.linked_in_events_ids == [signup.event_id, bank_success_1.event_id], '#1 Out event linked with both!'
 
     # out_nudge #1 (SUPPRESSED)
@@ -153,18 +153,18 @@ def test_doubled_welcome(user, event_in):
 
     # out_welcome_1
     assert out_welcome_1.event_type == EventOutType.WELCOME_EMAIL, '#1 event type is not WELCOME_EMAIL'
-    assert out_welcome_1.state == EventOutState.READY, '#1 state is not READY'
+    assert out_welcome_1.state == EventOutState.DONE, '#1 state is not DONE'
 
     # out_nudge_1
     assert out_nudge_1.event_type == EventOutType.BANK_LINK_NUDGE_SMS, '#2 event type is not BANK_LINK_NUDGE_SMS'
-    assert out_nudge_1.state == EventOutState.READY, '#2 state is not READY'
+    assert out_nudge_1.state == EventOutState.DONE, '#2 state is not DONE'
     assert out_nudge_1.linked_in_events_ids == [signup_1.event_id, bank_success.event_id], '#2 Out event linked with both!'
 
     # out_welcome_2 (suppressed)
     assert out_welcome_2.event_type == EventOutType.WELCOME_EMAIL, '#3 event type is not WELCOME_EMAIL'
-    assert out_welcome_2.state == EventOutState.SUPPRESSED, '#3 state is not READY'
+    assert out_welcome_2.state == EventOutState.SUPPRESSED, '#3 state is not DONE'
 
     # out_nudge_2  (suppressed)
     assert out_nudge_2.event_type == EventOutType.BANK_LINK_NUDGE_SMS, '#4 event type is not BANK_LINK_NUDGE_SMS'
-    assert out_nudge_2.state == EventOutState.SUPPRESSED, '#4 state is not READY'
+    assert out_nudge_2.state == EventOutState.SUPPRESSED, '#4 state is not DONE'
     assert out_nudge_2.linked_in_events_ids == [signup_2.event_id, bank_success.event_id], '#4 Out event linked with both!'

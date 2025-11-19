@@ -38,7 +38,7 @@ def test_basic(user, event_in):
     high_risk, *_ = out_events
     assert high_risk.event_type == EventOutType.HIGH_RISK_ALERT, 'event type is not HIGH_RISK_ALERT'
     assert high_risk.user_id == user.user_id, 'user_id'
-    assert high_risk.state == EventOutState.READY, 'state is not READY'
+    assert high_risk.state == EventOutState.DONE, 'state is not DONE'
     assert high_risk.linked_in_events_ids == [
         payment_failed_1.event_id, payment_failed_2.event_id, payment_failed_3.event_id
     ], 'linked_in_events_ids'
@@ -100,7 +100,7 @@ def test_old_payment_inited_not_saved(user, event_in):
     high_risk, *_ = out_events
     assert high_risk.event_type == EventOutType.HIGH_RISK_ALERT, 'event type is not HIGH_RISK_ALERT'
     assert high_risk.user_id == user.user_id, 'user_id'
-    assert high_risk.state == EventOutState.READY, 'state is not READY'
+    assert high_risk.state == EventOutState.DONE, 'state is not DONE'
     assert high_risk.linked_in_events_ids == [
         payment_failed_1.event_id, payment_failed_2.event_id, payment_failed_3.event_id
     ], 'linked_in_events_ids'
@@ -130,10 +130,10 @@ def test_payment_failed_x4(user, event_in):
 
     high_risk_1, high_risk_2 = out_events
 
-    # high_risk_1 (READY)
+    # high_risk_1 (DONE)
     assert high_risk_1.event_type == EventOutType.HIGH_RISK_ALERT, '#1 event type is not HIGH_RISK_ALERT'
     assert high_risk_1.user_id == user.user_id, '#1 user_id'
-    assert high_risk_1.state == EventOutState.READY, '#1 state is not READY'
+    assert high_risk_1.state == EventOutState.DONE, '#1 state is not DONE'
     assert high_risk_1.linked_in_events_ids == [
         payment_failed_1.event_id, payment_failed_2.event_id, payment_failed_3.event_id
     ], '#1 linked_in_events_ids'
@@ -192,18 +192,18 @@ def test_payment_failed_twice_but_not_suppressed(user, event_in):
 
     high_risk_1, high_risk_2 = out_events
 
-    # high_risk_1 (READY)
+    # high_risk_1 (DONE)
     assert high_risk_1.event_type == EventOutType.HIGH_RISK_ALERT, '#1 event type is not HIGH_RISK_ALERT'
     assert high_risk_1.user_id == user.user_id, '#1 user_id'
-    assert high_risk_1.state == EventOutState.READY, '#1 state is not READY'
+    assert high_risk_1.state == EventOutState.DONE, '#1 state is not DONE'
     assert high_risk_1.linked_in_events_ids == [
         payment_failed_1.event_id, payment_failed_2.event_id, payment_failed_3.event_id
     ], '#1 linked_in_events_ids'
 
-    # high_risk_2 (READY #2)
+    # high_risk_2 (DONE #2)
     assert high_risk_2.event_type == EventOutType.HIGH_RISK_ALERT, '#2 event type is not HIGH_RISK_ALERT'
     assert high_risk_2.user_id == user.user_id, '#2 user_id'
-    assert high_risk_2.state == EventOutState.READY, '#2 state is not READY'
+    assert high_risk_2.state == EventOutState.DONE, '#2 state is not DONE'
     assert high_risk_2.linked_in_events_ids == [
         payment_failed_4.event_id, payment_failed_5.event_id, payment_failed_6.event_id
     ], '#2 linked_in_events_ids'

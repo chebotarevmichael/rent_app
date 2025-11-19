@@ -27,7 +27,7 @@ def test_basic(user, event_in):
     out = out_events[0]
     assert out.event_type == EventOutType.WELCOME_EMAIL, 'event type is not WELCOME_EMAIL'
     assert out.user_id == user.user_id, 'user_id'
-    assert out.state == EventOutState.READY, 'state is not READY'
+    assert out.state == EventOutState.DONE, 'state is not DONE'
     assert out.linked_in_events_ids == [signup.event_id], 'linked_in_events_ids'
 
 
@@ -72,7 +72,7 @@ def test_3_in_events(user, event_in):
 
     # first
     assert out_1.event_type == EventOutType.WELCOME_EMAIL, '#1 event type is not WELCOME_EMAIL'
-    assert out_1.state == EventOutState.READY, '#1 state'
+    assert out_1.state == EventOutState.DONE, '#1 state'
     assert out_1.linked_in_events_ids == [in_1.event_id], '#1 linked_in_events_ids'
 
     # second
@@ -110,7 +110,7 @@ def test_event_from_past(user, event_in):
 
     # first
     assert out_1.event_type == EventOutType.WELCOME_EMAIL, '#1 event type is not WELCOME_EMAIL'
-    assert out_1.state == EventOutState.READY, '#1 state'
+    assert out_1.state == EventOutState.DONE, '#1 state'
     assert out_1.linked_in_events_ids == [in_from_now.event_id], '#1 linked_in_events_ids'
 
     # second

@@ -51,7 +51,7 @@ def test_basic(user, payment_failed_event_in):
     insufficient_funds, *_ = out_events
     assert insufficient_funds.event_type == EventOutType.INSUFFICIENT_FUNDS_EMAIL, 'event type is not INSUFFICIENT_FUNDS_EMAIL'
     assert insufficient_funds.user_id == user.user_id, 'user_id'
-    assert insufficient_funds.state == EventOutState.READY, 'state is not READY'
+    assert insufficient_funds.state == EventOutState.DONE, 'state is not DONE'
     assert insufficient_funds.linked_in_events_ids == [payment_failed.event_id], 'linked_in_events_ids'
 
 
@@ -104,7 +104,7 @@ def test_double_per_day(user, payment_failed_event_in):
     insufficient_funds_1, insufficient_funds_2 = out_events
     assert insufficient_funds_1.event_type == EventOutType.INSUFFICIENT_FUNDS_EMAIL, '#1 event type is not INSUFFICIENT_FUNDS_EMAIL'
     assert insufficient_funds_1.user_id == user.user_id, '#1 user_id'
-    assert insufficient_funds_1.state == EventOutState.READY, '#1 state is not READY'
+    assert insufficient_funds_1.state == EventOutState.DONE, '#1 state is not DONE'
     assert insufficient_funds_1.linked_in_events_ids == [payment_failed_1.event_id], '#1 linked_in_events_ids'
 
     assert insufficient_funds_2.event_type == EventOutType.INSUFFICIENT_FUNDS_EMAIL, '#2 event type is not INSUFFICIENT_FUNDS_EMAIL'
@@ -141,10 +141,10 @@ def test_double_per_2_days(user, payment_failed_event_in):
     insufficient_funds_1, insufficient_funds_2 = out_events
     assert insufficient_funds_1.event_type == EventOutType.INSUFFICIENT_FUNDS_EMAIL, '#1 event type is not INSUFFICIENT_FUNDS_EMAIL'
     assert insufficient_funds_1.user_id == user.user_id, '#1 user_id'
-    assert insufficient_funds_1.state == EventOutState.READY, '#1 state is not READY'
+    assert insufficient_funds_1.state == EventOutState.DONE, '#1 state is not DONE'
     assert insufficient_funds_1.linked_in_events_ids == [payment_failed_1.event_id], '#1 linked_in_events_ids'
 
     assert insufficient_funds_2.event_type == EventOutType.INSUFFICIENT_FUNDS_EMAIL, '#2 event type is not INSUFFICIENT_FUNDS_EMAIL'
     assert insufficient_funds_2.user_id == user.user_id, '#2 user_id'
-    assert insufficient_funds_2.state == EventOutState.READY, '#2 state is not SUPPRESSED'
+    assert insufficient_funds_2.state == EventOutState.DONE, '#2 state is not SUPPRESSED'
     assert insufficient_funds_2.linked_in_events_ids == [payment_failed_2.event_id], '#2 linked_in_events_ids'
