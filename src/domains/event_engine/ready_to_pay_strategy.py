@@ -22,7 +22,6 @@ class ReadyToPayStrategy(BaseStrategy):
         #  Но думаю практичнее ограничиться последним signup_completed-событием, чтобы не плодить лишние out-события.
         last_signup_completed_in_event = max(
             (e for e in in_events if e.event_type == EventInType.SIGNUP_COMPLETED),
-            key=lambda e: e.event_timestamp,
             default=None,
         )
 
@@ -69,10 +68,7 @@ class ReadyToPayStrategy(BaseStrategy):
 
         # choose something, if we don't have any ready/processing/done event
         if in_pipeline_event is None:
-            in_pipeline_event = min(
-                bank_link_out_events,
-                key=lambda e: e.event_timestamp,    # the earliest event in CREATED state
-            )
+            in_pipeline_event = min(bank_link_out_events)   # the earliest event in CREATED state
             in_pipeline_event.state = EventOutState.READY
             in_pipeline_event.explanation = EXPLANATION_TEMPLATE_OK.format(in_event_ids=in_pipeline_event.linked_in_events_ids)
 

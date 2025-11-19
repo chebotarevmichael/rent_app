@@ -64,7 +64,7 @@ def test_3_in_events(user, event_in):
 
     # check the result
     out_events: list[EventOut] = EventOut.bulk_get_by_user_ids(user_ids=[user.user_id])
-    out_events.sort(key=lambda x: x.event_timestamp)
+    out_events.sort()
 
     assert len(out_events) == 3, '3 out event'
     out_1, out_2, out_3 = out_events
@@ -102,7 +102,7 @@ def test_event_from_past(user, event_in):
 
     # check the result
     out_events: list[EventOut] = EventOut.bulk_get_by_user_ids(user_ids=[user.user_id])
-    out_events.sort(key=lambda x: x.event_timestamp)
+    out_events.sort()
 
     assert len(out_events) == 2, '2 out event'
     out_1, out_2 = out_events

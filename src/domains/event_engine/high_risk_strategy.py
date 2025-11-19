@@ -38,7 +38,7 @@ class HighRiskStrategy(BaseStrategy):
             payment_failed_in_events.append(in_event)
 
         payment_failed_in_row = []
-        for in_event in sorted(payment_failed_in_events, key=lambda e: e.event_timestamp):
+        for in_event in sorted(payment_failed_in_events):
             payment_failed_in_row.append(in_event)
 
             # TODO: можно переделать под attempt_number, тогда не придется опираться на "сколько событий дошло"
@@ -82,17 +82,12 @@ class HighRiskStrategy(BaseStrategy):
             return
 
         # get the LAST existing high risk out event
-        in_pipeline_event = max(
-            (e for e in high_risk_out_events if e.is_in_pipeline),
-            key=lambda e: e.event_timestamp,
-            default=None,
-        )
+        in_pipeline_event = max((e for e in high_risk_out_events if e.is_in_pipeline), default=None)
 
         # choose the FIRST created out event, if we don't have any ready/processing/done event
         if in_pipeline_event is None:
             in_pipeline_event = min(
                 (e for e in high_risk_out_events if e.state == EventOutState.CREATED),  # FIRST event in CREATED state
-                key=lambda e: e.event_timestamp,
                 default=None,
             )
             in_pipeline_event.state = EventOutState.READY

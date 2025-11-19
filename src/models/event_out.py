@@ -68,14 +68,20 @@ class EventOut(Base):
     def __hash__(self) -> int:
         return int_hash(self.event_type, self.user_id, *self.linked_in_events_ids, )
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: object):
         if not isinstance(other, EventOut):
-            return False
+            return NotImplemented
         return (
             self.event_type == other.event_type and
             self.user_id == other.user_id and
             self.linked_in_events_ids == other.linked_in_events_ids
         )
+
+    def __lt__(self, other: object):
+        if not isinstance(other, EventOut):
+            return NotImplemented
+        return self.event_timestamp < other.event_timestamp
+
 
     # TODO: какое действие должно быть? послать в канал или еще что
     #  только скорее должно быть перенесено в апку
@@ -96,7 +102,7 @@ class EventOut(Base):
         # todo NOTE:
         #  Потенциально кроме linked_IN_events могут добавиться linked_OUT_events
         #  (например: "если уже послали 2 письма и нет эффекта, значит в следующий раз посылаем смс")
-        linked_in_events.sort(key=lambda e: e.event_timestamp)
+        linked_in_events.sort()
 
         return cls(
             event_id=gen_id(),

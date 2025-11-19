@@ -28,7 +28,7 @@ def test_race_input_events_lte_24h(user, event_in, delay_between_events_sec):
 
     # check the result
     out_events: list[EventOut] = EventOut.bulk_get_by_user_ids(user_ids=[user.user_id])
-    out_events.sort(key=lambda x: x.event_timestamp)
+    out_events.sort()
 
     assert len(out_events) == 2, '2 out events: welcome + nudge sms'
     out_welcome, out_nudge = out_events
@@ -43,7 +43,7 @@ def test_race_input_events_lte_24h(user, event_in, delay_between_events_sec):
     assert out_nudge.event_type == EventOutType.BANK_LINK_NUDGE_SMS, '#2 event type is not BANK_LINK_NUDGE_SMS'
     assert out_nudge.user_id == user.user_id, '#2 user_id'
     assert out_nudge.state == EventOutState.READY, '#2 state is not READY'
-    _expected = sorted([signup, bank_success], key=lambda x: x.event_timestamp)
+    _expected = sorted([signup, bank_success])
     assert out_nudge.linked_in_events_ids == [e.event_id for e in _expected], 'Out event linked with both!'
 
 @pytest.mark.parametrize('delay_between_events_sec', [-24*3600-1, 24*3600+1])
@@ -92,7 +92,7 @@ def test_double_bank_success(user, event_in):
 
     # check the result
     out_events: list[EventOut] = EventOut.bulk_get_by_user_ids(user_ids=[user.user_id])
-    out_events.sort(key=lambda x: x.event_timestamp)
+    out_events.sort()
 
     assert len(out_events) == 1 + 2, '3 out events'
     out_welcome, out_nudge_1, out_nudge_2 = out_events
@@ -144,7 +144,7 @@ def test_doubled_welcome(user, event_in):
 
     # check the result
     out_events: list[EventOut] = EventOut.bulk_get_by_user_ids(user_ids=[user.user_id])
-    out_events.sort(key=lambda x: x.event_timestamp)
+    out_events.sort()
 
     assert len(out_events) == 2 + 2, '4 out events: welcome x2 + nudge x2'
     out_welcome_1, out_nudge_1, out_welcome_2, out_nudge_2 = out_events

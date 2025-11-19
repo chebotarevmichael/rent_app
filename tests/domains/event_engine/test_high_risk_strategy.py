@@ -123,7 +123,7 @@ def test_payment_failed_x4(user, event_in):
 
     # result
     out_events: list[EventOut] = EventOut.bulk_get_by_user_ids(user_ids=[user.user_id])
-    out_events.sort(key=lambda x: x.event_timestamp)
+    out_events.sort()
 
     assert len(out_events) == 2, 'high risk x2'
 
@@ -165,7 +165,7 @@ def test_payment_failed_twice_but_not_suppressed(user, event_in):
 
     # result
     out_events: list[EventOut] = EventOut.bulk_get_by_user_ids(user_ids=[user.user_id])
-    out_events.sort(key=lambda x: x.event_timestamp)
+    out_events.sort()
 
     assert len(out_events) == 1, 'high risk x1'
 
@@ -185,7 +185,7 @@ def test_payment_failed_twice_but_not_suppressed(user, event_in):
 
     # result
     out_events: list[EventOut] = EventOut.bulk_get_by_user_ids(user_ids=[user.user_id])
-    out_events.sort(key=lambda x: x.event_timestamp)
+    out_events.sort()
 
     assert len(out_events) == 2, 'high risk x2'
 

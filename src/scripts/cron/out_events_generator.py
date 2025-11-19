@@ -46,7 +46,7 @@ def cron_generate_out_events(
 
     for user in users:
         user_in_events: list[EventIn] = user_id2events_in.get(user.user_id, [])
-        user_in_events.sort(key=lambda event: event.event_timestamp)
+        user_in_events.sort()
         user_out_events: set[EventOut] = user_id2out_events.get(user.user_id, set())
 
         # create new out events for user

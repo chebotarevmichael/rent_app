@@ -97,7 +97,7 @@ def test_double_per_day(user, payment_failed_event_in):
 
     # check the result
     out_events: list[EventOut] = EventOut.bulk_get_by_user_ids(user_ids=[user.user_id])
-    out_events.sort(key=lambda x: x.event_timestamp)
+    out_events.sort()
     assert len(out_events) == 2, 'output event х2'
 
     insufficient_funds_1, insufficient_funds_2 = out_events
@@ -134,7 +134,7 @@ def test_double_per_2_days(user, payment_failed_event_in):
 
     # check the result
     out_events: list[EventOut] = EventOut.bulk_get_by_user_ids(user_ids=[user.user_id])
-    out_events.sort(key=lambda x: x.event_timestamp)
+    out_events.sort()
     assert len(out_events) == 2, 'output event х2'
 
     insufficient_funds_1, insufficient_funds_2 = out_events

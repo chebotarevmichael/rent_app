@@ -48,10 +48,7 @@ class WelcomeStrategy(BaseStrategy):
 
         # choose something, if we don't have any ready/processing/done event
         if in_pipeline_event is None:
-            in_pipeline_event = min(
-                welcome_out_events,
-                key=lambda e: e.event_timestamp,    # the earliest event in CREATED state
-            )
+            in_pipeline_event = min(welcome_out_events) # the earliest event in CREATED state
             in_pipeline_event.state = EventOutState.READY
             in_pipeline_event.explanation = EXPLANATION_TEMPLATE_OK.format(in_event_ids=in_pipeline_event.linked_in_events_ids)
 

@@ -19,7 +19,7 @@ class User(Base):
     marketing_opt_in: bool
     risk_segment: UserRiskSegment
 
-    # TODO: add country validator
+    # todo: add country validator
 
     @property
     def db_id(self):
