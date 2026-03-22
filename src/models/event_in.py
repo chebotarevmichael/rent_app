@@ -53,7 +53,7 @@ class EventIn(Base):
         return self.event_timestamp < other.event_timestamp
 
     @classmethod
-    def factory(cls, event_type: EventInType, user_id: str, event_timestamp: datetime, **kwargs) -> Self:
+    def factory(cls, event_type: EventInType, user_id: str, event_timestamp: datetime, **kwargs: Any) -> Self:  # type: ignore[override]
         return cls(
             event_id=f'{event_type}:{user_id}:{event_timestamp.isoformat()}',
             event_type=event_type,

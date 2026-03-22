@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import ClassVar, TypeVar, Any, Self
+from typing import ClassVar, Any, Self
 from pydantic import BaseModel, PrivateAttr
-
-T = TypeVar('T', bound='Base')
 
 
 class Base(ABC, BaseModel):
@@ -25,7 +23,7 @@ class Base(ABC, BaseModel):
         raise NotImplementedError
 
     @classmethod
-    def factory(cls, **kwargs) -> T:
+    def factory(cls, **kwargs: Any) -> Self:
         return cls(**kwargs)
 
     def update(self, data: dict) -> Self:
@@ -50,27 +48,27 @@ class Base(ABC, BaseModel):
     # ==== ORM mock ====
 
     @classmethod
-    def _get_table(cls) -> dict[Any, T]:
-        return Base._db[cls]
+    def _get_table(cls) -> dict[Any, Self]:
+        return Base._db[cls]  # type: ignore[return-value]
 
     @classmethod
-    def get(cls, db_id: Any) -> T | None:
+    def get(cls, db_id: Any) -> Self | None:
         return cls._get_table().get(db_id)
 
     @classmethod
-    def bulk_get(cls, db_ids: list[str]) -> list[T]:
+    def bulk_get(cls, db_ids: list[str]) -> list[Self]:
         _table = cls._get_table()
         return [_table[db_id] for db_id in db_ids if db_id in _table]
 
-    def save(self: T, data: dict = None) -> T:
+    def save(self, data: dict[str, Any] | None = None) -> Self:
         if data:
-            self.model_update(data)
-        _table = Base._db[type(self)]
+            self.update(data)
+        _table: dict[Any, Self] = Base._db[type(self)]  # type: ignore[assignment]
         _table[self.db_id] = self
         return self
 
     @classmethod
-    def bulk_save(cls, entities: list[T]) -> list[T]:
+    def bulk_save(cls, entities: list[Self]) -> list[Self]:
         _table = cls._get_table()
         for entity in entities:
             _table[entity.db_id] = entity

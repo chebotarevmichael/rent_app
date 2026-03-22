@@ -100,7 +100,7 @@ class HighRiskStrategy(BaseStrategy):
             event.explanation = EXPLANATION_TEMPLATE_SUPPRESSED.format(out_event_id=in_pipeline_event.event_id)
 
     @staticmethod
-    def build_message(user: User, last_initiated_ts: datetime) -> str:
+    def build_message(user: User, last_initiated_ts: datetime | None) -> str:
         return MESSAGE_TEMPLATE.format(
             user_id=user.user_id,
             limit=HIGH_RISK_ALERT_LIMIT,
