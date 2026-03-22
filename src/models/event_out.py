@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime
 from enum import Enum
-from typing import Self, TYPE_CHECKING
+from typing import Any, Self, TYPE_CHECKING
 
 from src.models import Base
 from src.tools import int_hash, gen_id, now
@@ -99,7 +99,7 @@ class EventOut(Base):
 
 
     @classmethod
-    def factory(cls, linked_in_events: list[EventIn], user: User, **kwargs) -> Self:
+    def factory(cls, linked_in_events: list[EventIn], user: User, **kwargs: Any) -> Self:  # type: ignore[override]
         # todo NOTE:
         #  Потенциально кроме linked_IN_events могут добавиться linked_OUT_events
         #  (например: "если уже послали 2 письма и нет эффекта, значит в следующий раз посылаем смс")

@@ -47,7 +47,7 @@ def create(request: RequestEvent = Body(...)):
         raise DuplicatedEvent(event_id=new_event.event_id, user_id=new_event.user_id)
 
     # user
-    user = User.get(db_id=request.user_id)
+    user: User | None = User.get(db_id=request.user_id)
     if not user:
         # todo NOTE:
         #  Не хочется давать возможность создавать пользователей по ивенту извне,
@@ -56,14 +56,15 @@ def create(request: RequestEvent = Body(...)):
         #  Но если так сделать, то в текущей системе пользователям совсем неоткуда будет взяться,
         #  поэтому разрешаем создавать пользователей на основе любого входящего ивента((
         # raise UnknownEventUser(user_id=request.user_id)
-        user = User.factory(user_id=request.user_id, **request.user_traits.model_dump())
+        user = User.factory(user_id=request.user_id, **(request.user_traits.model_dump() if request.user_traits else {}))
+        user.save()
     else:
-        user.update(request.user_traits.model_dump())
-
-    # todo NOTE:
-    #  Работа с 2 таблицами только через тр-цию, но т.к. БД замокана - делаем без контекстного менеджера
-    if user.is_changed:
-        user.save()     # create/update the user (only if it's really changed)
+        if request.user_traits is not None:
+            user.update(request.user_traits.model_dump())
+        # todo NOTE:
+        #  Работа с 2 таблицами только через тр-цию, но т.к. БД замокана - делаем без контекстного менеджера
+        if user.is_changed():
+            user.save()     # update the user (only if it's really changed)
     new_event.save()    # save the event
 
     # todo NOTE:

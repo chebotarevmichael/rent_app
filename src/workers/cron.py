@@ -1,5 +1,5 @@
 import dramatiq
-from periodiq import cron
+from periodiq import cron  # type: ignore[import-untyped]
 
 from src.scripts.cron import cron_generate_out_events
 

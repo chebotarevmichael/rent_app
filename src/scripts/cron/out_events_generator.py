@@ -11,10 +11,10 @@ from src.workers.senders import send_event_out
 
 def cron_generate_out_events(
         # for manual execution in production
-        event_timestamp: datetime = None,
+        event_timestamp: datetime | None = None,
         # for tests
-        actual_users_ids: list[str] = None,
-        _now: datetime = None,
+        actual_users_ids: list[str] | None = None,
+        _now: datetime | None = None,
 ):
     # todo NOTE:
     #  С учетом вводных "Пользователей 100к и будет 1кк через год" и "РПС по ивентам 5-20", крон скрипт будет
@@ -43,7 +43,7 @@ def cron_generate_out_events(
     user_id2out_events = group_set_by_key(items=actual_users_out_events, key='user_id')
 
     # users
-    users = User.bulk_get(db_ids=actual_users_ids)
+    users: list[User] = User.bulk_get(db_ids=actual_users_ids)
 
     for user in users:
         user_in_events: list[EventIn] = user_id2events_in.get(user.user_id, [])
@@ -65,7 +65,7 @@ def cron_generate_out_events(
             strategy.judge_out_events(in_events=user_in_events, out_events=user_out_events, _now=_now)
 
         # write new out events for current user to DB
-        EventOut.bulk_save(entities=created_out_events)
+        EventOut.bulk_save(entities=list(created_out_events))
 
         # todo NOTE:
         #  Правильнее эту штуку вынести в отдельный крон, который будет вычитывать READY, ставить их в очередь,
